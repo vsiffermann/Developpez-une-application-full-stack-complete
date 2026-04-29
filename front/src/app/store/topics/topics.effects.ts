@@ -5,7 +5,7 @@ import { catchError, map, of, switchMap } from 'rxjs';
 import { TopicsActions } from './topics.actions';
 import { Topic } from '../../shared/models/topic.model';
 
-const API_URL = 'http://localhost:8080/api';
+const API_URL = '/api';
 
 export const loadTopicsEffect = createEffect(
   (actions$ = inject(Actions), http = inject(HttpClient)) =>
@@ -14,9 +14,7 @@ export const loadTopicsEffect = createEffect(
       switchMap(() =>
         http.get<Topic[]>(`${API_URL}/topics`).pipe(
           map((topics) => TopicsActions.loadTopicsSuccess({ topics })),
-          catchError((error: Error) =>
-            of(TopicsActions.loadTopicsFailure({ error: error.message })),
-          ),
+          catchError((error: Error) => of(TopicsActions.loadTopicsFailure({ error: error.message }))),
         ),
       ),
     ),
@@ -30,9 +28,7 @@ export const subscribeEffect = createEffect(
       switchMap(({ id }) =>
         http.post<void>(`${API_URL}/topics/${id}/subscribe`, {}).pipe(
           map(() => TopicsActions.subscribeSuccess({ id })),
-          catchError((error: Error) =>
-            of(TopicsActions.loadTopicsFailure({ error: error.message })),
-          ),
+          catchError((error: Error) => of(TopicsActions.loadTopicsFailure({ error: error.message }))),
         ),
       ),
     ),
@@ -46,9 +42,7 @@ export const unsubscribeEffect = createEffect(
       switchMap(({ id }) =>
         http.delete<void>(`${API_URL}/topics/${id}/subscribe`).pipe(
           map(() => TopicsActions.unsubscribeSuccess({ id })),
-          catchError((error: Error) =>
-            of(TopicsActions.loadTopicsFailure({ error: error.message })),
-          ),
+          catchError((error: Error) => of(TopicsActions.loadTopicsFailure({ error: error.message }))),
         ),
       ),
     ),
