@@ -22,6 +22,20 @@ export const authFeature = createFeature({
   name: 'auth',
   reducer: createReducer(
     initialState,
+    on(AuthActions.register, (state) => ({ ...state, loading: true, error: null })),
+    on(AuthActions.registerSuccess, (state, { user, token }) => ({
+      ...state,
+      user,
+      token,
+      isAuthenticated: true,
+      loading: false,
+      error: null,
+    })),
+    on(AuthActions.registerFailure, (state, { error }) => ({
+      ...state,
+      error,
+      loading: false,
+    })),
     on(AuthActions.login, (state) => ({ ...state, loading: true, error: null })),
     on(AuthActions.loginSuccess, (state, { user, token }) => ({
       ...state,
