@@ -118,7 +118,65 @@ main
 
 ---
 
+---
+
+## Étape 4 — Inscription utilisateur end-to-end
+
+### Corrections découvertes en cours
+- `application-local.properties` converti en UTF-8 (commentaire `é` en ISO-8859-1 cassait Maven)
+- Java 25 LTS installé manuellement → `pom.xml` conserve bien `<java.version>25</java.version>`
+
+### Back-end créé
+- `entity/User.java` — entité JPA mappée sur la table `user` (backtick-quoted)
+- `repository/UserRepository.java` — JPA repository (findByEmail, existsByEmail/Username)
+- `dto/RegisterRequest.java` — validation Bean (@Email, @Pattern mot de passe sécurisé)
+- `dto/AuthResponse.java` — réponse `{ token, user: { id, email, username } }`
+- `service/JwtService.java` — génération/validation JWT via Auth0 java-jwt
+- `service/AuthService.java` — inscription : vérifie unicité email/username, encode le mot de passe, retourne JWT
+- `controller/AuthController.java` — `POST /api/auth/register` (public)
+- `config/JwtAuthenticationFilter.java` — filtre JWT (extrait le user du token sur chaque requête)
+- `config/SecurityConfig.java` — Spring Security stateless, `/api/auth/**` public, reste protégé
+
+### Front-end créé/mis à jour
+- `auth.actions.ts` — ajout de `Register`, `RegisterSuccess`, `RegisterFailure`
+- `auth.reducer.ts` — gestion du state register
+- `auth.effects.ts` — `registerEffect` + `registerSuccessEffect` (navigue vers /feed), `HttpErrorResponse` géré proprement sur tous les effets
+- `auth.service.ts` — URL corrigée de `http://localhost:8080/api` vers `/api` (proxy Angular)
+- `features/auth/register/` — composant complet : formulaire réactif, validation client, gestion erreurs serveur, Angular Material
+- `features/auth/login/` — placeholder (à implémenter étape 5)
+- `features/feed/` — placeholder (à implémenter étape 5)
+- `app.routes.ts` — routes : `/` → `/register`, `/register`, `/login`, `/feed` (protégé par authGuard)
+- `app.html` — nettoyé (uniquement `<router-outlet />`)
+
+### Chaîne validée (compilation)
+- `mvnw compile` → OK (Java 25, Spring Boot 4.0.6)
+- `tsc --noEmit` → OK (Angular 21, zéro erreur TypeScript)
+
+---
+
+## Session suivante — Améliorations back + outillage
+
+### Back-end ajouté
+- `exception/GlobalExceptionHandler.java` — `@RestControllerAdvice` centralisé :
+  - `MethodArgumentNotValidException` → 400 avec map `{ field: message }` (erreurs `@Valid`)
+  - `ResponseStatusException` → status HTTP + `{ message }` (erreurs métier)
+  - `BadCredentialsException` → 401 `{ message: "Identifiants invalides" }` (prêt pour le login)
+  - `Exception` → 500 fallback propre
+  - Corrige le bug d'affichage front : Spring Boot 4 retournait ProblemDetail (`detail`) au lieu de `message`
+
+### Outillage ajouté
+- `postman/MDD.postman_collection.json` — collection Postman complète :
+  - 11 endpoints organisés en 4 dossiers (Auth, Utilisateur, Thèmes, Articles)
+  - Variable `{{token}}` auto-renseignée après register/login via script test
+  - Variable `{{baseUrl}}` = `http://localhost:8080/api`
+
+---
+
 ## Prochaine étape
 
-**Étape 4** — Implémenter l'inscription utilisateur end-to-end pour valider toute la chaîne :
-`Angular → API REST → Spring Boot → MySQL`
+**Étape 5** — Implémenter les fonctionnalités principales :
+- Connexion utilisateur (`POST /api/auth/login`)
+- Profil utilisateur (`GET /api/users/me`, `PUT /api/users/me`)
+- Thèmes et abonnements (`GET /api/topics`, subscribe/unsubscribe)
+- Fil d'actualité (`GET /api/posts/feed`)
+- Création d'article + commentaires
