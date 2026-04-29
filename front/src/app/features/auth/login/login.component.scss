@@ -10,8 +10,9 @@
   width: 100%;
   max-width: 420px;
 
-  mat-card-content {
-    padding-top: 1rem;
+  h1 {
+    text-align: center;
+    margin-bottom: 1.5rem;
   }
 
   form {
@@ -27,11 +28,16 @@
       margin-top: 0.5rem;
     }
   }
+}
 
-  mat-card-actions {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    padding: 0.5rem 1rem 1rem;
-  }
+.server-error {
+  color: var(--mat-sys-error);
+  font-size: 0.875rem;
+  margin: 0.25rem 0;
+}
+
+.register-link {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.9rem;
 }

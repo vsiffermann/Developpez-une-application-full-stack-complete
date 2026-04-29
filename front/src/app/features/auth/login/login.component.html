@@ -1,34 +1,40 @@
 <div class="login-page">
-  <mat-card class="login-card">
-    <mat-card-header>
-      <mat-card-title>Connexion</mat-card-title>
-      <mat-card-subtitle>(formulaire placeholder, non implémenté)</mat-card-subtitle>
-    </mat-card-header>
+  <div class="login-card">
+    <h1>Connexion</h1>
 
-    <mat-card-content>
-      <form>
-        <mat-form-field appearance="outline">
-          <mat-label>Email ou nom d'utilisateur</mat-label>
-          <input matInput type="text" autocomplete="username" />
-        </mat-form-field>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="outline">
+        <mat-label>Email ou nom d'utilisateur</mat-label>
+        <input matInput formControlName="identifier" autocomplete="username" />
+        @if (form.controls.identifier.hasError('required') && form.controls.identifier.touched) {
+          <mat-error>L'identifiant est requis</mat-error>
+        }
+      </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Mot de passe</mat-label>
-          <input matInput type="password" autocomplete="current-password" />
-          <button mat-icon-button matSuffix type="button">
-            <mat-icon>visibility_off</mat-icon>
-          </button>
-        </mat-form-field>
-
-        <button mat-raised-button color="primary" type="submit">
-          Se connecter
+      <mat-form-field appearance="outline">
+        <mat-label>Mot de passe</mat-label>
+        <input matInput [type]="showPassword() ? 'text' : 'password'" formControlName="password" autocomplete="current-password" />
+        <button mat-icon-button matSuffix type="button" (click)="showPassword.set(!showPassword())">
+          <mat-icon>{{ showPassword() ? 'visibility' : 'visibility_off' }}</mat-icon>
         </button>
-      </form>
-    </mat-card-content>
+        @if (form.controls.password.hasError('required') && form.controls.password.touched) {
+          <mat-error>Le mot de passe est requis</mat-error>
+        }
+      </mat-form-field>
 
-    <mat-card-actions>
-      <span>Pas encore inscrit ?</span>
-      <a mat-button routerLink="/register">Créer un compte</a>
-    </mat-card-actions>
-  </mat-card>
+      @if (error$ | async; as error) {
+        <p class="server-error">{{ error }}</p>
+      }
+
+      <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || (loading$ | async)">
+        @if (loading$ | async) {
+          Connexion en cours…
+        } @else {
+          Se connecter
+        }
+      </button>
+    </form>
+
+    <p class="register-link">Pas encore inscrit ? <a routerLink="/register">Créer un compte</a></p>
+  </div>
 </div>
