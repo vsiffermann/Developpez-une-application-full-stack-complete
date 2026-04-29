@@ -1,6 +1,7 @@
 package com.openclassrooms.mdd_api.controller;
 
 import com.openclassrooms.mdd_api.dto.AuthResponse;
+import com.openclassrooms.mdd_api.dto.LoginRequest;
 import com.openclassrooms.mdd_api.dto.RegisterRequest;
 import com.openclassrooms.mdd_api.service.AuthService;
 import jakarta.validation.Valid;
@@ -18,5 +19,10 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
         return ResponseEntity.ok(authService.register(request));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
+        return ResponseEntity.ok(authService.login(request));
     }
 }
