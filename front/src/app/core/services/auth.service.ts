@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from '../../shared/models/user.model';
 
-const API_URL = 'http://localhost:8080/api';
+const API_URL = '/api';
 
 export interface AuthResponse {
   user: User;
