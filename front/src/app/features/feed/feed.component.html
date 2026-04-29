@@ -1,42 +1,54 @@
-<mat-toolbar color="primary" class="navbar">
-  <span class="navbar-title">MDD</span>
-  <span class="spacer"></span>
-  <button mat-icon-button><mat-icon>newspaper</mat-icon></button>
-  <button mat-icon-button><mat-icon>tag</mat-icon></button>
-  <button mat-icon-button><mat-icon>account_circle</mat-icon></button>
-</mat-toolbar>
+<app-navbar />
 
 <div class="feed-container">
   <div class="feed-header">
     <h1>Fil d'actualité</h1>
-    <button mat-fab extended color="primary">
+    <button mat-fab extended color="primary" routerLink="/posts/new">
       <mat-icon>edit</mat-icon>
       Créer un article
     </button>
   </div>
-  
-  <p>(placeholder, non implémenté)</p>
 
-  <div class="post-list">
-    @for (post of placeholderPosts; track post.id) {
-      <mat-card class="post-card">
-        <mat-card-header>
-          <mat-chip-set>
-            <mat-chip>{{ post.topic }}</mat-chip>
-          </mat-chip-set>
-          <span class="post-meta">{{ post.author }} · {{ post.date }}</span>
-        </mat-card-header>
-        <mat-card-content>
-          <h2 class="post-title">{{ post.title }}</h2>
-          <p class="post-excerpt">{{ post.excerpt }}</p>
-        </mat-card-content>
-        <mat-card-actions>
-          <button mat-button>
-            Lire la suite
-            <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+  @if (loading$ | async) {
+    <div class="spinner-wrapper">
+      <mat-spinner diameter="48" />
+    </div>
+  } @else {
+    @if (posts$ | async; as posts) {
+      @if (posts.length > 0) {
+        <div class="sort-bar">
+          <span>Trier par date :</span>
+          <button mat-button (click)="toggleSort((sortOrder$ | async)!)">
+            <mat-icon>{{ (sortOrder$ | async) === 'desc' ? 'arrow_downward' : 'arrow_upward' }}</mat-icon>
+            {{ (sortOrder$ | async) === 'desc' ? 'Plus récent' : 'Plus ancien' }}
           </button>
-        </mat-card-actions>
-      </mat-card>
+        </div>
+
+        <div class="post-list">
+          @for (post of posts; track post.id) {
+            <mat-card class="post-card" [routerLink]="['/posts', post.id]">
+              <mat-card-header>
+                <mat-chip-set>
+                  <mat-chip>{{ post.topicName }}</mat-chip>
+                </mat-chip-set>
+                <span class="post-meta">{{ post.authorUsername }} · {{ post.createdAt | date:'d MMM yyyy' }}</span>
+              </mat-card-header>
+              <mat-card-content>
+                <h2 class="post-title">{{ post.title }}</h2>
+                <p class="post-excerpt">{{ post.content | slice:0:150 }}{{ post.content.length > 150 ? '…' : '' }}</p>
+              </mat-card-content>
+              <mat-card-actions>
+                <button mat-button>
+                  Lire la suite
+                  <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+                </button>
+              </mat-card-actions>
+            </mat-card>
+          }
+        </div>
+      } @else {
+        <p class="empty-state">Abonnez-vous à des thèmes pour voir des articles ici.</p>
+      }
     }
-  </div>
+  }
 </div>

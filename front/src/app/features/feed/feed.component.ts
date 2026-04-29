@@ -1,27 +1,48 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { AsyncPipe, DatePipe } from '@angular/common';
+import { Store } from '@ngrx/store';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
+import { PostsActions } from '../../store/posts/posts.actions';
+import { selectFeed, selectPostsLoading, selectSortOrder } from '../../store/posts/posts.selectors';
 
 @Component({
   selector: 'app-feed',
   standalone: true,
   imports: [
+    RouterLink,
+    AsyncPipe,
+    DatePipe,
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,
     MatCardModule,
     MatChipsModule,
+    MatProgressSpinnerModule,
+    NavbarComponent,
   ],
   templateUrl: './feed.component.html',
   styleUrl: './feed.component.scss',
 })
-export class FeedComponent {
-  readonly placeholderPosts = [
-    { id: 1, topic: 'Java', author: 'user1', date: '27 avr. 2026', title: 'Article test 1', excerpt: 'Un article très intéressant sur Java.' },
-    { id: 2, topic: 'Angular', author: 'user2', date: '26 avr. 2026', title: 'Article test 2', excerpt: 'Un article très intéressant sur Angular.' },
-    { id: 3, topic: 'Spring', author: 'user3', date: '25 avr. 2026', title: 'Article test 3', excerpt: 'Un article très intéressant sur Spring.' },
-  ];
+export class FeedComponent implements OnInit {
+  private readonly store = inject(Store);
+
+  readonly posts$ = this.store.select(selectFeed);
+  readonly loading$ = this.store.select(selectPostsLoading);
+  readonly sortOrder$ = this.store.select(selectSortOrder);
+
+  ngOnInit(): void {
+    this.store.dispatch(PostsActions.loadFeed({ sort: 'desc' }));
+  }
+
+  toggleSort(current: 'asc' | 'desc'): void {
+    const next = current === 'desc' ? 'asc' : 'desc';
+    this.store.dispatch(PostsActions.setSortOrder({ sort: next }));
+  }
 }
