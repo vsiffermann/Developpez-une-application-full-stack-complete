@@ -1,0 +1,54 @@
+<app-navbar />
+
+<div class="post-detail-container">
+  <button mat-button (click)="goBack()">
+    <mat-icon>arrow_back</mat-icon>
+    Retour
+  </button>
+
+  @if (loading$ | async) {
+    <div class="spinner-wrapper">
+      <mat-spinner diameter="48" />
+    </div>
+  } @else if (post$ | async; as post) {
+    <article>
+      <div class="post-meta">
+        <span class="topic-badge">{{ post.topicName }}</span>
+        <span>{{ post.authorUsername }} · {{ post.createdAt | date:'d MMM yyyy' }}</span>
+      </div>
+
+      <h1>{{ post.title }}</h1>
+
+      <div class="post-content">{{ post.content }}</div>
+    </article>
+
+    <mat-divider />
+
+    <section class="comments-section">
+      <h2>Commentaires ({{ post.comments.length }})</h2>
+
+      <div class="comment-form">
+        <mat-form-field appearance="outline" class="comment-field">
+          <mat-label>Ajouter un commentaire</mat-label>
+          <textarea matInput [formControl]="commentControl" rows="3"></textarea>
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="submitComment()" [disabled]="commentControl.invalid">
+          Envoyer
+        </button>
+      </div>
+
+      <div class="comments-list">
+        @for (comment of post.comments; track comment.id) {
+          <div class="comment">
+            <div class="comment-header">
+              <strong>{{ comment.authorUsername }}</strong>
+              <span class="comment-date">{{ comment.createdAt | date:'d MMM yyyy' }}</span>
+            </div>
+            <p>{{ comment.content }}</p>
+          </div>
+          <mat-divider />
+        }
+      </div>
+    </section>
+  }
+</div>
