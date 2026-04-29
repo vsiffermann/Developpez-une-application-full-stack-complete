@@ -1,0 +1,73 @@
+.register-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 1rem;
+}
+
+.register-card {
+  width: 100%;
+  max-width: 420px;
+
+  h1 {
+    margin-bottom: 1.5rem;
+    font-size: 1.75rem;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    mat-form-field {
+      width: 100%;
+    }
+
+    button {
+      margin-top: 0.5rem;
+    }
+  }
+}
+
+.password-criteria {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      line-height: 16px;
+    }
+
+    &.valid {
+      color: green;
+    }
+
+    &.invalid {
+      color: var(--mat-sys-error, red);
+    }
+  }
+}
+
+.server-error {
+  color: var(--mat-sys-error, red);
+  font-size: 0.875rem;
+  margin: 0.25rem 0;
+}
+
+.login-link {
+  margin-top: 1.5rem;
+  text-align: center;
+}
