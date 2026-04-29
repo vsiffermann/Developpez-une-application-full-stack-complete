@@ -33,10 +33,7 @@ export const registerSuccessEffect = createEffect(
 );
 
 export const loginEffect = createEffect(
-  (
-    actions$ = inject(Actions),
-    authService = inject(AuthService),
-  ) =>
+  (actions$ = inject(Actions), authService = inject(AuthService)) =>
     actions$.pipe(
       ofType(AuthActions.login),
       switchMap(({ identifier, password }) =>
@@ -82,6 +79,22 @@ export const loadUserEffect = createEffect(
           map((user) => AuthActions.loadUserSuccess({ user })),
           catchError((err: HttpErrorResponse) =>
             of(AuthActions.loginFailure({ error: err.error?.message ?? 'Une erreur est survenue' })),
+          ),
+        ),
+      ),
+    ),
+  { functional: true },
+);
+
+export const updateProfileEffect = createEffect(
+  (actions$ = inject(Actions), authService = inject(AuthService)) =>
+    actions$.pipe(
+      ofType(AuthActions.updateProfile),
+      switchMap((payload) =>
+        authService.updateMe({ email: payload.email, username: payload.username, password: payload.password }).pipe(
+          map((user) => AuthActions.updateProfileSuccess({ user })),
+          catchError((err: HttpErrorResponse) =>
+            of(AuthActions.updateProfileFailure({ error: err.error?.message ?? 'Une erreur est survenue' })),
           ),
         ),
       ),

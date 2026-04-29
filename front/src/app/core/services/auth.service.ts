@@ -10,6 +10,12 @@ export interface AuthResponse {
   token: string;
 }
 
+export interface UpdateProfilePayload {
+  email?: string;
+  username?: string;
+  password?: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
@@ -24,5 +30,9 @@ export class AuthService {
 
   getMe(): Observable<User> {
     return this.http.get<User>(`${API_URL}/users/me`);
+  }
+
+  updateMe(payload: UpdateProfilePayload): Observable<User> {
+    return this.http.put<User>(`${API_URL}/users/me`, payload);
   }
 }
