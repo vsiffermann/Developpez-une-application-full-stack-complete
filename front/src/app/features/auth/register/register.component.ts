@@ -5,11 +5,11 @@ import { RouterLink } from '@angular/router';
 import { AsyncPipe } from '@angular/common';
 import { Store } from '@ngrx/store';
 import { ErrorStateMatcher } from '@angular/material/core';
-import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
+import { LogoComponent } from '../../../shared/components/logo/logo.component';
 import { AuthActions } from '../../../store/auth/auth.actions';
 import { selectAuthError, selectAuthLoading } from '../../../store/auth/auth.selectors';
 
@@ -29,11 +29,11 @@ class PasswordCriteriaErrorMatcher implements ErrorStateMatcher {
     ReactiveFormsModule,
     RouterLink,
     AsyncPipe,
-    MatCardModule,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
     MatIcon,
+    LogoComponent,
   ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss',

@@ -1,18 +1,35 @@
-.register-page {
+.auth-page {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  padding: 1rem;
+  padding: 1.5rem 1rem;
 }
 
-.register-card {
+.auth-card {
+  position: relative;
   width: 100%;
   max-width: 420px;
 
-  h1 {
+  .back-btn {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    color: var(--mat-sys-on-surface);
+    text-decoration: none;
+  }
+
+  .auth-logo {
+    display: flex;
+    justify-content: center;
     margin-bottom: 1.5rem;
-    font-size: 1.75rem;
+  }
+
+  h1 {
+    text-align: center;
+    margin-bottom: 1.5rem;
   }
 
   form {
@@ -24,50 +41,45 @@
       width: 100%;
     }
 
-    button {
+    button[type='submit'] {
       margin-top: 0.5rem;
+      width: 100%;
     }
   }
 }
 
 .password-criteria {
   list-style: none;
-  padding: 0;
   margin: 0 0 0.5rem;
+  padding: 0;
+  font-size: 0.8rem;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.2rem;
 
   li {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
-    font-size: 0.8rem;
+    gap: 0.3rem;
 
     mat-icon {
-      font-size: 16px;
-      width: 16px;
-      height: 16px;
-      line-height: 16px;
+      font-size: 1rem;
+      width: 1rem;
+      height: 1rem;
     }
 
     &.valid {
-      color: green;
+      color: var(--mat-sys-primary);
     }
 
     &.invalid {
-      color: var(--mat-sys-error, red);
+      color: var(--mat-sys-on-surface-variant);
     }
   }
 }
 
 .server-error {
-  color: var(--mat-sys-error, red);
+  color: var(--mat-sys-error);
   font-size: 0.875rem;
   margin: 0.25rem 0;
-}
-
-.login-link {
-  margin-top: 1.5rem;
-  text-align: center;
 }

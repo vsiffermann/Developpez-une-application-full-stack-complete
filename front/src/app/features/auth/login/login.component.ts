@@ -3,11 +3,11 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { RouterLink } from '@angular/router';
 import { AsyncPipe } from '@angular/common';
 import { Store } from '@ngrx/store';
-import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { LogoComponent } from '../../../shared/components/logo/logo.component';
 import { AuthActions } from '../../../store/auth/auth.actions';
 import { selectAuthError, selectAuthLoading } from '../../../store/auth/auth.selectors';
 
@@ -18,11 +18,11 @@ import { selectAuthError, selectAuthLoading } from '../../../store/auth/auth.sel
     ReactiveFormsModule,
     RouterLink,
     AsyncPipe,
-    MatCardModule,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
     MatIconModule,
+    LogoComponent,
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',

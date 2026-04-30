@@ -1,10 +1,18 @@
-<div class="login-page">
-  <div class="login-card">
-    <h1>Connexion</h1>
+<div class="auth-page">
+  <div class="auth-card">
+    <a class="back-btn" routerLink="/">
+      <mat-icon>arrow_back</mat-icon>
+    </a>
+
+    <div class="auth-logo">
+      <app-logo [size]="300" />
+    </div>
+
+    <h1>Se connecter</h1>
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <mat-form-field appearance="outline">
-        <mat-label>Email ou nom d'utilisateur</mat-label>
+        <mat-label>E-mail ou nom d'utilisateur</mat-label>
         <input matInput formControlName="identifier" autocomplete="username" />
         @if (form.controls.identifier.hasError('required') && form.controls.identifier.touched) {
           <mat-error>L'identifiant est requis</mat-error>
@@ -34,7 +42,5 @@
         }
       </button>
     </form>
-
-    <p class="register-link">Pas encore inscrit ? <a routerLink="/register">Créer un compte</a></p>
   </div>
 </div>
