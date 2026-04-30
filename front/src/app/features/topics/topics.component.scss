@@ -2,18 +2,26 @@
   max-width: 900px;
   margin: 0 auto;
   padding: 2rem 1rem;
+
+  h1 {
+    margin-bottom: 1.5rem;
+  }
 }
 
 .topics-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 1rem;
-  margin-top: 1.5rem;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .topic-card {
   display: flex;
   flex-direction: column;
+  height: 100%;
 
   mat-card-content {
     flex: 1;
