@@ -2,11 +2,18 @@
 
 <div class="feed-container">
   <div class="feed-header">
-    <h1>Fil d'actualité</h1>
-    <button mat-fab extended color="primary" routerLink="/posts/new">
-      <mat-icon>edit</mat-icon>
+    <button mat-raised-button color="primary" routerLink="/posts/new">
       Créer un article
     </button>
+    @if ((posts$ | async)?.length) {
+      <div class="sort-bar">
+        <span>Trier par :</span>
+        <button mat-button (click)="toggleSort(sortOrder())">
+          <mat-icon>{{ sortOrder() === 'desc' ? 'arrow_downward' : 'arrow_upward' }}</mat-icon>
+          {{ sortOrder() === 'desc' ? 'Plus récent' : 'Plus ancien' }}
+        </button>
+      </div>
+    }
   </div>
 
   @if (loading$ | async) {
@@ -16,33 +23,20 @@
   } @else {
     @if (posts$ | async; as posts) {
       @if (posts.length > 0) {
-        <div class="sort-bar">
-          <span>Trier par date :</span>
-          <button mat-button (click)="toggleSort((sortOrder$ | async)!)">
-            <mat-icon>{{ (sortOrder$ | async) === 'desc' ? 'arrow_downward' : 'arrow_upward' }}</mat-icon>
-            {{ (sortOrder$ | async) === 'desc' ? 'Plus récent' : 'Plus ancien' }}
-          </button>
-        </div>
-
-        <div class="post-list">
+        <div class="post-grid">
           @for (post of posts; track post.id) {
             <mat-card class="post-card" [routerLink]="['/posts', post.id]">
-              <mat-card-header>
-                <mat-chip-set>
-                  <mat-chip>{{ post.topicName }}</mat-chip>
-                </mat-chip-set>
-                <span class="post-meta">{{ post.authorUsername }} · {{ post.createdAt | date:'d MMM yyyy' }}</span>
-              </mat-card-header>
               <mat-card-content>
                 <h2 class="post-title">{{ post.title }}</h2>
-                <p class="post-excerpt">{{ post.content | slice:0:150 }}{{ post.content.length > 150 ? '…' : '' }}</p>
+                <div class="post-meta">
+                  <span class="post-author">{{ post.authorUsername }}</span>
+                  <span class="post-date">{{ post.createdAt | date:'d MMM yyyy' }}</span>
+                  <mat-chip-set>
+                    <mat-chip>{{ post.topicName }}</mat-chip>
+                  </mat-chip-set>
+                </div>
+                <p class="post-excerpt">{{ post.content | slice:0:200 }}{{ post.content.length > 200 ? '…' : '' }}</p>
               </mat-card-content>
-              <mat-card-actions>
-                <button mat-button>
-                  Lire la suite
-                  <mat-icon iconPositionEnd>arrow_forward</mat-icon>
-                </button>
-              </mat-card-actions>
             </mat-card>
           }
         </div>

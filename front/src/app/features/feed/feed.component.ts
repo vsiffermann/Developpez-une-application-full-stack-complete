@@ -1,6 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { AsyncPipe, DatePipe } from '@angular/common';
+import { AsyncPipe, DatePipe, SlicePipe } from '@angular/common';
 import { Store } from '@ngrx/store';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -19,6 +20,7 @@ import { selectFeed, selectPostsLoading, selectSortOrder } from '../../store/pos
     RouterLink,
     AsyncPipe,
     DatePipe,
+    SlicePipe,
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,
@@ -35,7 +37,7 @@ export class FeedComponent implements OnInit {
 
   readonly posts$ = this.store.select(selectFeed);
   readonly loading$ = this.store.select(selectPostsLoading);
-  readonly sortOrder$ = this.store.select(selectSortOrder);
+  readonly sortOrder = toSignal(this.store.select(selectSortOrder), { initialValue: 'desc' as const });
 
   ngOnInit(): void {
     this.store.dispatch(PostsActions.loadFeed({ sort: 'desc' }));
