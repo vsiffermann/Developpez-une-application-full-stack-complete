@@ -6,23 +6,11 @@
     Retour
   </button>
 
-  <h1>Créer un article</h1>
+  <h1>Créer un nouvel article</h1>
 
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <mat-form-field appearance="outline">
-      <mat-label>Thème</mat-label>
-      <mat-select formControlName="topicId">
-        @for (topic of topics$ | async; track topic.id) {
-          <mat-option [value]="topic.id">{{ topic.name }}</mat-option>
-        }
-      </mat-select>
-      @if (form.controls.topicId.hasError('required') && form.controls.topicId.touched) {
-        <mat-error>Le thème est requis</mat-error>
-      }
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Titre</mat-label>
+      <mat-label>Titre de l'article</mat-label>
       <input matInput formControlName="title" />
       @if (form.controls.title.hasError('required') && form.controls.title.touched) {
         <mat-error>Le titre est requis</mat-error>
@@ -30,8 +18,20 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <mat-label>Contenu</mat-label>
-      <textarea matInput formControlName="content" rows="10"></textarea>
+      <mat-label>Catégorie</mat-label>
+      <mat-select formControlName="topicId">
+        @for (topic of topics$ | async; track topic.id) {
+          <mat-option [value]="topic.id">{{ topic.name }}</mat-option>
+        }
+      </mat-select>
+      @if (form.controls.topicId.hasError('required') && form.controls.topicId.touched) {
+        <mat-error>La catégorie est requise</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Contenu de l'article</mat-label>
+      <textarea matInput formControlName="content" rows="12"></textarea>
       @if (form.controls.content.hasError('required') && form.controls.content.touched) {
         <mat-error>Le contenu est requis</mat-error>
       }
@@ -45,7 +45,7 @@
       @if (loading$ | async) {
         Publication en cours…
       } @else {
-        Publier
+        Créer
       }
     </button>
   </form>
