@@ -172,11 +172,144 @@ main
 
 ---
 
+## Étape 5 — Fonctionnalités principales back-end (API complète)
+
+### Entités JPA créées
+- `entity/Topic.java` — thème (id, name, description)
+- `entity/Subscription.java` — abonnement user↔topic (contrainte unique)
+- `entity/Post.java` — article (title, content, author, topic, createdAt, comments)
+- `entity/Comment.java` — commentaire (content, author, post, createdAt)
+
+### Repositories
+- `TopicRepository` — `findAll()`
+- `SubscriptionRepository` — `findByUser`, `existsByUserAndTopic`, `findByUserAndTopic`
+- `PostRepository` — `findByTopicIn(topics, sort)`
+- `CommentRepository`
+
+### DTOs
+- `LoginRequest` — identifier (email ou username) + password
+- `UserResponse` — id, email, username
+- `UpdateProfileRequest` — email?, username?, password? (tous optionnels)
+- `TopicResponse` — id, name, description, subscribed (booléen contextualisé)
+- `CreatePostRequest` — title, content, topicId
+- `CreateCommentRequest` — content
+- `CommentResponse` — id, content, authorUsername, createdAt
+- `PostSummaryResponse` — id, title, content, authorUsername, topicName, createdAt
+- `PostDetailResponse` — idem + liste de commentaires
+
+### Services
+- `AuthService.login()` — recherche par email ou username, vérifie mot de passe BCrypt, retourne JWT
+- `UserService` — `getProfile()`, `updateProfile()` (vérif unicité email/username)
+- `TopicService` — `getAll()` (avec flag subscribed), `subscribe()`, `unsubscribe()`
+- `PostService` — `getFeed()` (tri asc/desc), `create()`, `getById()`, `addComment()`
+
+### Controllers
+- `AuthController` — ajout `POST /api/auth/login`
+- `UserController` — `GET /api/users/me`, `PUT /api/users/me`
+- `TopicController` — `GET /api/topics`, `POST /api/topics/{id}/subscribe`, `DELETE /api/topics/{id}/subscribe`
+- `PostController` — `GET /api/posts/feed?sort=desc`, `POST /api/posts`, `GET /api/posts/{id}`, `POST /api/posts/{id}/comments`
+
+### Compilation validée
+- `mvnw compile` → OK (11 endpoints, 0 erreur)
+
+---
+
+## Étape 5 suite — Front-end Angular (fonctionnalités principales)
+
+### Modèles corrigés
+- `Post` — passe de nested objects (`author: User`, `topic: Topic`) à plat (`authorUsername`, `topicName`) pour correspondre à l'API
+- `PostDetail` — interface étendue avec `comments: Comment[]`
+- `Comment` — idem : `authorUsername: string` au lieu de `author: User`
+
+### Store NgRx enrichi
+- `posts.actions` — ajout `SetSortOrder`, `CreatePostFailure`, `LoadPostFailure`, `AddComment*`
+- `posts.reducer` — `currentPost: PostDetail | null`, gestion de tous les nouveaux cas
+- `posts.effects` — tri passé dans l'URL, `createPostSuccessEffect` navigue vers `/posts/:id`, `addCommentEffect`, URL corrigée vers `/api`
+- `auth.actions` — ajout `UpdateProfile*`
+- `auth.reducer` — gestion `updateProfile*`
+- `auth.effects` — ajout `updateProfileEffect`
+- `topics.effects` — URL corrigée vers `/api`
+- `auth.service` — ajout `updateMe()`
+
+### Composant partagé
+- `shared/components/navbar/navbar.component` — barre de navigation avec liens Feed, Thèmes, Profil
+
+### Composants implémentés
+- `LoginComponent` — formulaire réactif, dispatch `AuthActions.login`, toggle visibilité mot de passe
+- `FeedComponent` — connecté au store, tri asc/desc, état vide, navigation vers article
+- `TopicsComponent` — liste des thèmes, bouton abonner/désabonner dynamique
+- `PostDetailComponent` — article complet + liste commentaires + formulaire ajout commentaire
+- `CreatePostComponent` — formulaire titre/contenu/thème, redirige vers l'article créé
+- `ProfileComponent` — affichage profil, formulaire modification, bouton déconnexion
+
+### Routes ajoutées
+- `/topics`, `/posts/new`, `/posts/:id`, `/profile` (toutes protégées par authGuard)
+- Route par défaut redirige vers `/login` (au lieu de `/register`)
+
+### Compilation validée
+- `tsc --noEmit` → OK (0 erreur TypeScript)
+
+---
+
+## Étape 6 — UI & Responsive
+
+### index.html
+- Titre corrigé : "MDD — Monde de Dév"
+- `lang="fr"` ajouté
+- Doublons de fonts/icons supprimés
+
+### styles.scss
+- Ajout `box-sizing: border-box` global
+- Breakpoints `$mobile: 600px` et `$tablet: 960px` définis avec mixins
+
+### Responsive appliqué à tous les composants
+- `feed.component.scss` — header flex-wrap sur mobile
+- `topics.component.scss` — grille passe en 1 colonne sous 600px
+- `post-detail.component.scss` — meta et header commentaires flex-wrap
+- `create-post.component.scss` — bouton submit pleine largeur sur mobile
+- `profile.component.scss` — boutons d'action flex-wrap
+- `login.component.scss` + `register.component.scss` — bouton submit pleine largeur
+
+### Maquettes Figma
+- Intégrées (fichiers `ai/maquettes/P6-1.png` et `P6-2.png` analysés)
+
+### Compilation validée
+- `tsc --noEmit` → OK (0 erreur TypeScript)
+
+---
+
+## Étape 6 (suite) — Intégration maquettes Figma
+
+### Design system
+- Couleur principale : `mat.$deep-purple-palette` (violet) dans `styles.scss`
+- Logo MDD : composant SVG partagé (`shared/components/logo/logo.component`) — nuage violet + texte "MDD" blanc, taille configurable via input `size`
+
+### Nouveaux fichiers
+- `features/home/home.component` — page d'accueil avec logo centré + boutons "Se connecter" / "S'inscrire"
+- `shared/components/logo/logo.component` — logo SVG réutilisable
+
+### Composants mis à jour
+- `app.routes.ts` — route `/` → `HomeComponent` (sans guard), `**` redirige vers `/`
+- `navbar.component` — liens textuels desktop (Articles, Thèmes, Se déconnecter, icône profil) + hamburger `mat-menu` sur mobile
+- `login.component` + `register.component` — logo MDD centré en haut, flèche retour vers `/`, liens "Déjà inscrit" supprimés
+- `feed.component` — grille 2 colonnes desktop → 1 colonne mobile, bouton "Créer un article" à gauche, tri à droite
+- `create-post.component` — renommé "Créer un nouvel article", champs réordonnés (Titre → Catégorie → Contenu), bouton "Créer"
+- `post-detail.component` — titre en premier, méta (date/auteur/thème) dessous, bouton icône envoi pour commentaire
+- `profile.component` — section "Abonnements" ajoutée (topics filtrés `subscribed=true`, bouton Se désabonner), chargement via `TopicsActions.loadTopics()`
+
+### Compilation validée
+- `tsc --noEmit` → OK (0 erreur TypeScript)
+
+---
+
 ## Prochaine étape
 
-**Étape 5** — Implémenter les fonctionnalités principales :
-- Connexion utilisateur (`POST /api/auth/login`)
-- Profil utilisateur (`GET /api/users/me`, `PUT /api/users/me`)
-- Thèmes et abonnements (`GET /api/topics`, subscribe/unsubscribe)
-- Fil d'actualité (`GET /api/posts/feed`)
-- Création d'article + commentaires
+⚠️ **Validation manuelle obligatoire** :
+- Tester l'application end-to-end (back + front démarrés)
+- Vérifier chaque parcours : accueil, inscription, connexion, fil d'actualité, thèmes, article, commentaire, profil, abonnements
+- Corriger les éventuels bugs découverts
+
+**Étape 7** — Tests :
+- Tests unitaires back (JUnit + Mockito) — couverture ≥ 70%
+- Tests unitaires front (Jest) — composants principaux
+- Tests E2E (Cypress) — parcours utilisateur complets

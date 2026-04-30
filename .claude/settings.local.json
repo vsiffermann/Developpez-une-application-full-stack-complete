@@ -10,7 +10,10 @@
       "Skill(update-config)",
       "Bash(./mvnw compile *)",
       "Bash(python3 -c ' *)",
-      "Bash(javac -version)"
+      "Bash(javac -version)",
+      "Bash(python3 *)",
+      "Bash(node *)",
+      "WebFetch(domain:www.figma.com)"
     ]
   }
 }
