@@ -1,13 +1,27 @@
 <mat-toolbar color="primary" class="navbar">
-  <span class="navbar-brand" routerLink="/feed">MDD</span>
+  <a routerLink="/feed" class="navbar-logo">
+    <app-logo [size]="100" />
+  </a>
+
   <span class="spacer"></span>
-  <a mat-icon-button routerLink="/feed" routerLinkActive="active" matTooltip="Fil d'actualité">
-    <mat-icon>newspaper</mat-icon>
-  </a>
-  <a mat-icon-button routerLink="/topics" routerLinkActive="active" matTooltip="Thèmes">
-    <mat-icon>tag</mat-icon>
-  </a>
-  <a mat-icon-button routerLink="/profile" routerLinkActive="active" matTooltip="Mon profil">
-    <mat-icon>account_circle</mat-icon>
-  </a>
+
+  <nav class="nav-desktop">
+    <button mat-button (click)="logout()">Se déconnecter</button>
+    <a mat-button routerLink="/feed" routerLinkActive="nav-active">Articles</a>
+    <a mat-button routerLink="/topics" routerLinkActive="nav-active">Thèmes</a>
+    <a mat-icon-button routerLink="/profile" routerLinkActive="nav-active">
+      <mat-icon>account_circle</mat-icon>
+    </a>
+  </nav>
+
+  <button mat-icon-button class="nav-mobile" [matMenuTriggerFor]="mobileMenu">
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <mat-menu #mobileMenu="matMenu">
+    <a mat-menu-item routerLink="/feed">Articles</a>
+    <a mat-menu-item routerLink="/topics">Thèmes</a>
+    <a mat-menu-item routerLink="/profile">Mon profil</a>
+    <button mat-menu-item (click)="logout()">Se déconnecter</button>
+  </mat-menu>
 </mat-toolbar>
