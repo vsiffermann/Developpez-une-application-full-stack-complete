@@ -40,19 +40,19 @@ Le MVP (Minimum Viable Product) couvre :
 
 | Fonctionnalité          | Description                         | Statut |
 | ----------------------- | ----------------------------------- | ------ |
-| Inscription utilisateur | Email + username + password (regex) |        |
-| Connexion               | JWT + localStorage                  |        |
-| Consultation profil     | Email, username, abonnements        |        |
-| Modification profil     | Mise à jour infos                   |        |
-| Déconnexion             | Suppression JWT                     |        |
-| Liste des thèmes        | Tous les topics                     |        |
-| S’abonner               | Bouton dynamique                    |        |
-| Se désabonner           | Depuis profil                       |        |
-| Fil d’actualité         | Articles abonnements                |        |
-| Tri du fil              | Ascendant / descendant              |        |
-| Créer un article        | Thème + contenu                     |        |
-| Consulter article       | + commentaires                      |        |
-| Ajouter commentaire     | Non récursif                        |        |
+| Inscription utilisateur | Email + username + password (regex) | ✅     |
+| Connexion               | JWT + localStorage                  | ✅     |
+| Consultation profil     | Email, username, abonnements        | ✅     |
+| Modification profil     | Mise à jour infos                   | ✅     |
+| Déconnexion             | Suppression JWT                     | ✅     |
+| Liste des thèmes        | Tous les topics                     | ✅     |
+| S’abonner               | Bouton dynamique                    | ✅     |
+| Se désabonner           | Depuis profil                       | ✅     |
+| Fil d’actualité         | Articles abonnements                | ✅     |
+| Tri du fil              | Ascendant / descendant              | ✅     |
+| Créer un article        | Thème + contenu                     | ✅     |
+| Consulter article       | + commentaires                      | ✅     |
+| Ajouter commentaire     | Non récursif                        | ✅     |
 
 ---
 
@@ -60,7 +60,27 @@ Le MVP (Minimum Viable Product) couvre :
 
 ## 2.1 Schéma global de l’architecture
 
-*(À compléter)*
+L’application suit une architecture **client-serveur en couches** :
+
+```
+[Navigateur]
+     │  HTTP/JSON + JWT
+     ▼
+[Angular 21 — SPA]
+  Composants standalone → Store NgRx → Services HTTP
+     │  /api/* (proxy dev → port 8080)
+     ▼
+[Spring Boot 4 — API REST]
+  Controller → Service → Repository
+     │  Spring Data JPA / Hibernate
+     ▼
+[MySQL 8.4]
+  Tables : user, topic, subscription, post, comment
+```
+
+**Flux d’authentification :** l’utilisateur s’inscrit ou se connecte via `/api/auth/*`. Le back-end retourne un JWT signé (Auth0 java-jwt). Le front-end stocke ce token en `localStorage` et l’envoie dans l’en-tête `Authorization: Bearer <token>` à chaque requête protégée. Spring Security intercepte et valide le token via un filtre JWT (`JwtAuthenticationFilter`) avant d’atteindre les controllers.
+
+**Migrations BDD :** gérées par Flyway (V1 → V7), incluant les tables et les données de test (5 topics, articles, commentaires).
 
 ---
 
@@ -172,15 +192,17 @@ Prévu :
 
 ---
 
-## 4.2 Tâches IA
+## 4.2 Supervision et tâches déléguées à l'IA
 
-| Tâche           | Outil  | Objectif    | Vérification       |
-| --------------- | ------ | ----------- | ------------------ |
-| Entités JPA     | Claude | Boilerplate | Vérif relations    |
-| DTO / Mapper    | Claude | Sécurité    | Supprimer password |
-| Tests JUnit     | Claude | Couverture  | Cas erreurs        |
-| Spring Security | Claude | JWT         | Test complet       |
-| Angular         | Claude | Structure   | Vérif types        |
+Décrivez les tâches confiées à l'IA, et comment vous avez vérifié, validé ou corrigé son travail.
+
+| Tâche déléguée | Outil / collaborateur | Objectif | Vérification effectuée |
+| --- | --- | --- | --- |
+| Génération des entités JPA (User, Post, Comment, Topic, Subscription) | Claude Code | Gain de temps sur le boilerplate | Vérification des annotations JPA, des relations `@ManyToMany` et `@OneToMany`, ajout des contraintes de validation manquantes |
+| Génération des DTOs et Mappers | Claude Code | Éviter l'exposition des entités directement | Contrôle des champs exposés, suppression du `password` dans les réponses utilisateur |
+| Squelette des tests unitaires JUnit | Claude Code | Couvrir rapidement les cas nominaux | Revue des assertions, ajout des cas d'erreur (404, 409, 400), correction des mocks Mockito |
+| Configuration Spring Security | Claude Code | Complexité technique, gain de temps | Test complet du filtre JWT, vérification CORS, test des routes publiques vs protégées via Postman |
+| Génération des composants Angular (formulaires, services) | Claude Code | Structuration rapide du front-end | Vérification de la réactivité (Signals vs Observables), corrections des types TypeScript, tests Jest ajoutés manuellement |
 
 ---
 
