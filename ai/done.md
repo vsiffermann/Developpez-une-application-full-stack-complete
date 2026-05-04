@@ -368,11 +368,36 @@ main
 
 ---
 
+---
+
+## Étape 8 — Finalisation
+
+| Tâche | Statut |
+|---|---|
+| Couverture tests front ≥ 70% | ✅ 85% statements, 71% functions, 80% branches |
+| Nettoyage code + Javadoc (28 méthodes) | ✅ Controllers et services back documentés |
+| Documentation API Swagger | ✅ Springdoc configuré — http://localhost:8080/swagger-ui.html |
+| README, FAQ, choix-tech.md, ai/tests.md | ✅ Produits et commités |
+| Merge develop → main + tag v1.0.0 | ✅ Pushé sur GitHub |
+| **Validation manuelle end-to-end** | ⏳ À faire — back + front démarrés, parcourir les 13 fonctionnalités |
+
+---
+
 ## Prochaine étape
 
-**Étape 8 — Finalisation** :
-1. ~~Couverture de tests front~~ ✅ 85% statements, 71% functions, 80% branches
-2. Validation manuelle end-to-end (back + front démarrés, parcourir chaque fonctionnalité)
-3. Nettoyage code (respect SOLID, suppression code mort)
-4. Documentation API finale (Swagger déjà configuré via Springdoc)
-5. Préparation livraison (README, FAQ, annexes dans `ai/choix-tech.md`)
+**Validation manuelle end-to-end** (à faire en 2026-05-05) :
+
+Démarrer les serveurs :
+- `cd back && ./mvnw spring-boot:run`
+- `cd front && npm start`
+
+Checklist sur http://localhost:4200 :
+- [ ] Inscription avec un nouvel email
+- [ ] Connexion par email
+- [ ] Connexion par nom d'utilisateur
+- [ ] Consultation et modification du profil
+- [ ] Liste des thèmes + abonnement + désabonnement
+- [ ] Fil d'actualité (articles visibles, tri asc/desc)
+- [ ] Création d'un article
+- [ ] Consultation d'un article + ajout de commentaire
+- [ ] Déconnexion
