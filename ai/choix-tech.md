@@ -237,8 +237,8 @@ Rendez-vous sur la page d’accueil et cliquez sur "S’inscrire". Renseignez un
 **Comment se connecter ?**  
 Depuis la page de connexion, saisissez votre adresse e-mail **ou** votre nom d’utilisateur, puis votre mot de passe.
 
-**La session est-elle persistante ?**  
-Oui. Le token JWT est conservé dans le navigateur. Vous restez connecté jusqu’à ce que vous cliquiez sur "Se déconnecter" ou que le token expire (24h).
+**Ma session expire-t-elle ?**  
+Votre session est conservée entre les visites. Si vous vous déconnectez manuellement ou videz le cache de votre navigateur, vous devrez vous reconnecter.
 
 **J’ai oublié mon mot de passe.**  
 Il n’existe pas encore de fonctionnalité de réinitialisation par e-mail dans ce MVP. Contactez l’administrateur.
@@ -276,8 +276,8 @@ Depuis la page de détail d’un article, rédigez votre commentaire dans le cha
 
 ### Problèmes fréquents
 
-**La page ne charge pas / erreur réseau.**  
-Vérifiez que le back-end Spring Boot est bien démarré sur `http://localhost:8080`. Si l’erreur persiste, rafraîchissez la page.
+**L’application ne charge pas, que faire ?**  
+Rafraîchissez la page (F5 ou Ctrl+R). Si le problème persiste, vérifiez votre connexion réseau. Si le back-end n’est pas démarré, suivez les instructions du README. Vider le cache du navigateur peut également résoudre certains problèmes d’affichage.
 
 **"Identifiants invalides" à la connexion.**  
 Vérifiez l’orthographe de votre identifiant (e-mail ou nom d’utilisateur) et de votre mot de passe. Les mots de passe sont sensibles à la casse.
