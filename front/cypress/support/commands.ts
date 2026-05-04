@@ -13,6 +13,7 @@ Cypress.Commands.add('login', (identifier: string, password: string) => {
   });
 });
 
+// alice est abonnée à JavaScript et Python — elle a des articles dans le feed
 Cypress.Commands.add('loginAsTestUser', () => {
-  cy.login('test@mdd.fr', 'Test1234!');
+  cy.login('alice@example.com', 'Test@1234');
 });

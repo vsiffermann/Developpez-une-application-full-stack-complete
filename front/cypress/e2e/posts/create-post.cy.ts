@@ -5,18 +5,29 @@ describe('Create Post', () => {
   });
 
   it('should display the create post form', () => {
-    // given the user visits /posts/new, when the page loads, then title, topic and content fields are visible
+    cy.get('input[formControlName="title"]').should('exist');
+    cy.get('mat-select[formControlName="topicId"]').should('exist');
+    cy.get('textarea[formControlName="content"]').should('exist');
+    cy.get('button[type="submit"]').should('exist');
   });
 
   it('should create a post and redirect to its detail page', () => {
-    // given valid title, topic and content, when the form is submitted, then the user is redirected to /posts/:id with the new post displayed
+    cy.get('input[formControlName="title"]').type('Mon article de test Cypress', { force: true });
+    cy.get('mat-select[formControlName="topicId"]').click();
+    cy.get('mat-option').first().click();
+    cy.get('textarea[formControlName="content"]').type("Contenu de test généré par Cypress.", { force: true });
+    cy.get('button[type="submit"]').click();
+    cy.url().should('match', /\/posts\/\d+/);
+    cy.contains('Mon article de test Cypress').should('be.visible');
   });
 
-  it('should show validation errors when fields are empty', () => {
-    // given the form is submitted without filling any field, then required field errors are displayed
+  it('should keep submit button disabled when fields are empty', () => {
+    cy.get('button[type="submit"]').should('be.disabled');
   });
 
   it('should list available topics in the topic selector', () => {
-    // given topics exist in the database, when the topic field is opened, then all available topics are listed
+    cy.get('mat-select[formControlName="topicId"]').click();
+    cy.get('mat-option').should('have.length', 5);
+    cy.get('mat-option').should('contain', 'JavaScript');
   });
 });

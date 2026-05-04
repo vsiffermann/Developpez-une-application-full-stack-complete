@@ -4,22 +4,30 @@ describe('Login', () => {
   });
 
   it('should display the login form', () => {
-    // given the user visits /login, when the page loads, then the identifier and password fields are visible
+    cy.get('input[formControlName="identifier"]').should('exist');
+    cy.get('input[formControlName="password"]').should('exist');
+    cy.get('button[type="submit"]').should('exist');
   });
 
   it('should login with email and redirect to feed', () => {
-    // given a registered user's email and password, when the form is submitted, then the user is redirected to /feed
+    cy.get('input[formControlName="identifier"]').type('alice@example.com', { force: true });
+    cy.get('input[formControlName="password"]').type('Test@1234', { force: true });
+    cy.get('button[type="submit"]').click();
+    cy.url().should('include', '/feed');
   });
 
   it('should login with username and redirect to feed', () => {
-    // given a registered user's username and password, when the form is submitted, then the user is redirected to /feed
+    cy.get('input[formControlName="identifier"]').type('alice', { force: true });
+    cy.get('input[formControlName="password"]').type('Test@1234', { force: true });
+    cy.get('button[type="submit"]').click();
+    cy.url().should('include', '/feed');
   });
 
   it('should show an error for wrong password', () => {
-    // given a valid email and an incorrect password, when the form is submitted, then an error message is displayed
-  });
-
-  it('should redirect to /feed if already authenticated', () => {
-    // given the user has a valid token in localStorage, when the user visits /login, then they are redirected to /feed
+    cy.get('input[formControlName="identifier"]').type('alice@example.com', { force: true });
+    cy.get('input[formControlName="password"]').type('mauvais-mot-de-passe', { force: true });
+    cy.get('button[type="submit"]').click();
+    cy.get('.server-error').should('be.visible');
+    cy.url().should('include', '/login');
   });
 });

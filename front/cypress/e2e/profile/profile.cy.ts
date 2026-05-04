@@ -5,26 +5,46 @@ describe('Profile', () => {
   });
 
   it('should display current user email and username', () => {
-    // given an authenticated user, when the profile page loads, then the current email and username are displayed in the form
+    cy.get('input[formControlName="email"]').should('have.value', 'alice@example.com');
+    cy.get('input[formControlName="username"]').should('have.value', 'alice');
   });
 
-  it('should update username successfully', () => {
-    // given a new unique username, when the form is submitted, then a success message is shown and the username is updated
+  it('should update username successfully and stay on profile', () => {
+    const newUsername = `alice_${Date.now()}`;
+    cy.get('input[formControlName="username"]').clear().type(newUsername, { force: true });
+    cy.get('button[type="submit"]').click();
+    cy.url().should('include', '/profile');
+    // Nettoyage : remettre le username original
+    cy.get('input[formControlName="username"]').clear().type('alice', { force: true });
+    cy.get('button[type="submit"]').click();
   });
 
   it('should show an error when the new email is already taken', () => {
-    // given an email already used by another account, when the form is submitted, then an error message is displayed
+    cy.get('input[formControlName="email"]').clear().type('bob@example.com', { force: true });
+    cy.get('button[type="submit"]').click();
+    cy.get('.server-error').should('be.visible');
   });
 
   it('should display subscribed topics', () => {
-    // given a user subscribed to topics, when the profile page loads, then the subscribed topics are listed in the subscriptions section
+    cy.get('.subscriptions-section').should('be.visible');
+    cy.get('.subscriptions-section').contains(/javascript/i).should('be.visible');
+    cy.get('.subscriptions-section').contains(/python/i).should('be.visible');
   });
 
   it('should unsubscribe from a topic from the profile page', () => {
-    // given a subscribed topic in the list, when the unsubscribe button is clicked, then the topic is removed from the subscriptions list
+    cy.contains('mat-card.subscription-card', /python/i)
+      .contains('button', /se désabonner/i)
+      .click();
+    cy.get('.subscriptions-section').contains(/python/i).should('not.exist');
+    // Nettoyage : se réabonner depuis la page topics
+    cy.visit('/topics');
+    cy.contains('mat-card', /python/i)
+      .contains('button', /s'abonner/i)
+      .click();
   });
 
-  it('should logout and redirect to home', () => {
-    // given an authenticated user on the profile page, when the logout button is clicked, then the token is cleared and the user is redirected to /
+  it('should logout and redirect to login', () => {
+    cy.contains('button', /se déconnecter/i).click();
+    cy.url().should('include', '/login');
   });
 });

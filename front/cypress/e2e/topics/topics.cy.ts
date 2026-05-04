@@ -5,18 +5,38 @@ describe('Topics', () => {
   });
 
   it('should display the list of all topics', () => {
-    // given topics exist in the database, when the topics page loads, then all topic cards are visible
+    cy.get('mat-card.topic-card').should('have.length', 5);
   });
 
-  it('should show a subscribe button for unsubscribed topics', () => {
-    // given the user is not subscribed to a topic, when the page loads, then the button label is "S'abonner"
+  it('should show subscribe and unsubscribe buttons depending on subscriptions', () => {
+    // alice est abonnée à JS + Python → boutons warn ; les autres → boutons primary
+    cy.get('mat-card.topic-card button[color="primary"]').should('have.length.at.least', 1);
+    cy.get('mat-card.topic-card button[color="warn"]').should('have.length.at.least', 1);
   });
 
   it('should subscribe to a topic and update the button', () => {
-    // given the user is not subscribed to a topic, when the subscribe button is clicked, then the button changes to "Se désabonner"
+    cy.contains('mat-card.topic-card', 'Web3')
+      .find('button[color="primary"]')
+      .click();
+    cy.contains('mat-card.topic-card', 'Web3')
+      .find('button[color="warn"]')
+      .should('be.visible');
+    // Nettoyage
+    cy.contains('mat-card.topic-card', 'Web3')
+      .find('button[color="warn"]')
+      .click();
   });
 
   it('should unsubscribe from a topic and update the button', () => {
-    // given the user is already subscribed to a topic, when the button is clicked, then the button changes back to "S'abonner"
+    cy.contains('mat-card.topic-card', 'JavaScript')
+      .find('button[color="warn"]')
+      .click();
+    cy.contains('mat-card.topic-card', 'JavaScript')
+      .find('button[color="primary"]')
+      .should('be.visible');
+    // Nettoyage
+    cy.contains('mat-card.topic-card', 'JavaScript')
+      .find('button[color="primary"]')
+      .click();
   });
 });

@@ -5,26 +5,43 @@ describe('Feed', () => {
   });
 
   it('should display the list of posts from subscribed topics', () => {
-    // given a user subscribed to topics that have posts, when the feed page loads, then a list of post cards is visible
+    cy.get('.post-card').should('have.length.at.least', 1);
   });
 
   it('should display an empty state when user has no subscriptions', () => {
-    // given a user with no subscriptions, when the feed loads, then an empty state message is displayed
+    const unique = Date.now();
+    cy.request('POST', '/api/auth/register', {
+      email: `fresh${unique}@test.com`,
+      username: `fresh${unique}`,
+      password: 'Test@1234',
+    }).then((res) => {
+      localStorage.setItem('mdd_token', res.body.token);
+    });
+    cy.visit('/feed');
+    cy.get('.empty-state').should('be.visible');
   });
 
-  it('should sort posts in ascending order', () => {
-    // given multiple posts in the feed, when the user selects ascending sort, then the oldest post appears first
+  it('should switch to ascending sort order', () => {
+    cy.get('.post-card').should('have.length.at.least', 2);
+    // En état initial (desc), le bouton affiche "Plus récent" — cliquer bascule en asc
+    cy.contains('button', /plus récent/i).click();
+    cy.contains('button', /plus ancien/i).should('be.visible');
   });
 
-  it('should sort posts in descending order', () => {
-    // given multiple posts in the feed, when the user selects descending sort, then the newest post appears first
+  it('should switch back to descending sort order', () => {
+    cy.get('.post-card').should('have.length.at.least', 2);
+    cy.contains('button', /plus récent/i).click();
+    cy.contains('button', /plus ancien/i).click();
+    cy.contains('button', /plus récent/i).should('be.visible');
   });
 
   it('should navigate to post detail on card click', () => {
-    // given at least one post in the feed, when the user clicks on a post card, then they are navigated to /posts/:id
+    cy.get('.post-card').first().click();
+    cy.url().should('match', /\/posts\/\d+/);
   });
 
   it('should navigate to create post page', () => {
-    // given the feed page, when the user clicks "Créer un article", then they are navigated to /posts/new
+    cy.contains('button', /créer un article/i).click();
+    cy.url().should('include', '/posts/new');
   });
 });

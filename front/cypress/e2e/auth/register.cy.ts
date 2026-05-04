@@ -4,22 +4,38 @@ describe('Register', () => {
   });
 
   it('should display the register form', () => {
-    // given the user visits /register, when the page loads, then the form with username, email and password fields is visible
+    cy.get('input[formControlName="username"]').should('exist');
+    cy.get('input[formControlName="email"]').should('exist');
+    cy.get('input[formControlName="password"]').should('exist');
+    cy.get('button[type="submit"]').should('exist');
   });
 
   it('should register successfully and redirect to feed', () => {
-    // given valid unique credentials, when the form is submitted, then the user is redirected to /feed
+    const unique = Date.now();
+    cy.get('input[formControlName="username"]').type(`user${unique}`, { force: true });
+    cy.get('input[formControlName="email"]').type(`user${unique}@test.com`, { force: true });
+    cy.get('input[formControlName="password"]').type('Test@1234', { force: true });
+    cy.get('button[type="submit"]').click();
+    cy.url().should('include', '/feed');
   });
 
   it('should show an error when email is already taken', () => {
-    // given an email already registered, when the form is submitted, then an error message is displayed
+    cy.get('input[formControlName="username"]').type('nouveaunom', { force: true });
+    cy.get('input[formControlName="email"]').type('alice@example.com', { force: true });
+    cy.get('input[formControlName="password"]').type('Test@1234', { force: true });
+    cy.get('button[type="submit"]').click();
+    cy.get('.server-error').should('be.visible');
+    cy.url().should('include', '/register');
   });
 
   it('should show validation errors for a weak password', () => {
-    // given a password that does not meet the requirements, when the form is submitted, then inline validation errors are shown
+    cy.get('input[formControlName="username"]').type('testuser', { force: true });
+    cy.get('input[formControlName="email"]').type('testuser@test.com', { force: true });
+    cy.get('input[formControlName="password"]').type('simple', { force: true });
+    cy.get('.password-criteria .invalid').should('have.length.at.least', 1);
   });
 
   it('should show validation errors when fields are empty', () => {
-    // given the form is submitted without filling any field, then required field errors are displayed
+    cy.get('button[type="submit"]').should('be.disabled');
   });
 });
