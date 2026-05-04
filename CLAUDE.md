@@ -20,6 +20,6 @@ Après chaque session de travail significative, mets à jour `ai/done.md` :
 ## Conventions
 
 - Gitflow : branche `develop`
-- Commits en français, préfixés : `back:`, `front:`, `feat:`, `fix:`
+- Commits en anglais, préfixés : `back:`, `front:`, `feat:`, `fix:`, `docs:`, `chore:`
 - Secrets dans `application-local.properties` uniquement (ignoré par Git, jamais commité)
 - Serveur back : `http://localhost:8080` — Serveur front : `http://localhost:4200`

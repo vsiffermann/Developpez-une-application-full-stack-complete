@@ -14,7 +14,9 @@
       "Bash(python3 *)",
       "Bash(node *)",
       "WebFetch(domain:www.figma.com)",
-      "Read(//c/Users/vsiff/**)"
+      "Read(//c/Users/vsiff/**)",
+      "Bash(Get-ChildItem -Path \"C:\\\\_git\\\\vsiffermann\\\\Developpez-une-application-full-stack-complete\\\\back\\\\src\\\\main\\\\java\\\\com\\\\openclassrooms\\\\mdd_api\" -Recurse -Filter \"*.java\")",
+      "Bash(Select-Object FullName)"
     ]
   }
 }
