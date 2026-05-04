@@ -8,7 +8,10 @@
     "watch": "ng build --watch --configuration development",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "cypress:report": "cypress run --reporter mochawesome --reporter-options \"reportDir=cypress/results/raw,overwrite=false,html=false,json=true\" && npx mochawesome-merge cypress/results/raw/*.json -o cypress/results/merged.json && npx marge cypress/results/merged.json --reportDir cypress/results --reportFilename report --inline"
   },
   "private": true,
   "packageManager": "npm@10.9.7",
@@ -34,11 +37,16 @@
     "@angular/cli": "^21.2.8",
     "@angular/compiler-cli": "^21.2.0",
     "@ngrx/store-devtools": "^21.1.0",
+    "@types/cypress": "^0.1.6",
     "@types/jest": "^30.0.0",
+    "cypress": "^15.14.2",
     "jest": "^30.3.0",
     "jest-environment-jsdom": "^30.3.0",
     "jest-preset-angular": "^16.1.4",
     "jsdom": "^28.0.0",
+    "mochawesome": "^7.1.4",
+    "mochawesome-merge": "^5.1.1",
+    "mochawesome-report-generator": "^6.3.2",
     "prettier": "^3.8.1",
     "ts-jest": "^29.4.9",
     "typescript": "~5.9.2"
