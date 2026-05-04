@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+/** Logique métier de gestion du profil utilisateur. */
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -17,10 +18,25 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    /**
+     * Retourne le profil de l'utilisateur sous forme de DTO.
+     *
+     * @param user utilisateur authentifié
+     * @return id, email et nom d'utilisateur
+     */
     public UserResponse getProfile(User user) {
         return new UserResponse(user.getId(), user.getEmail(), user.getUsername());
     }
 
+    /**
+     * Met à jour les champs renseignés du profil utilisateur (email, username, mot de passe).
+     * Seuls les champs non nuls de la requête sont appliqués.
+     *
+     * @param user    utilisateur authentifié à modifier
+     * @param request champs à mettre à jour (tous optionnels)
+     * @return profil mis à jour
+     * @throws org.springframework.web.server.ResponseStatusException 409 si le nouvel email ou username est déjà utilisé
+     */
     public UserResponse updateProfile(User user, UpdateProfileRequest request) {
         if (request.email() != null && !request.email().equals(user.getEmail())) {
             if (userRepository.existsByEmail(request.email())) {

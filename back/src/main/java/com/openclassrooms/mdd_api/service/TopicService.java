@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/** Logique métier de gestion des thèmes et des abonnements. */
 @Service
 @RequiredArgsConstructor
 public class TopicService {
@@ -22,6 +23,12 @@ public class TopicService {
     private final TopicRepository topicRepository;
     private final SubscriptionRepository subscriptionRepository;
 
+    /**
+     * Retourne tous les thèmes en indiquant si l'utilisateur y est abonné.
+     *
+     * @param user utilisateur dont on vérifie les abonnements
+     * @return liste de tous les thèmes avec le champ {@code subscribed} calculé
+     */
     public List<TopicResponse> getAll(User user) {
         Set<Long> subscribedIds = subscriptionRepository.findByUser(user).stream()
                 .map(sub -> sub.getTopic().getId())
@@ -37,6 +44,13 @@ public class TopicService {
                 .toList();
     }
 
+    /**
+     * Abonne l'utilisateur au thème spécifié.
+     *
+     * @param user    utilisateur à abonner
+     * @param topicId identifiant du thème
+     * @throws org.springframework.web.server.ResponseStatusException 404 si le thème n'existe pas, 409 si déjà abonné
+     */
     public void subscribe(User user, Long topicId) {
         Topic topic = topicRepository.findById(topicId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Thème introuvable"));
@@ -48,6 +62,13 @@ public class TopicService {
         subscriptionRepository.save(Subscription.builder().user(user).topic(topic).build());
     }
 
+    /**
+     * Désabonne l'utilisateur du thème spécifié.
+     *
+     * @param user    utilisateur à désabonner
+     * @param topicId identifiant du thème
+     * @throws org.springframework.web.server.ResponseStatusException 404 si le thème n'existe pas ou si l'abonnement est inexistant
+     */
     public void unsubscribe(User user, Long topicId) {
         Topic topic = topicRepository.findById(topicId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Thème introuvable"));

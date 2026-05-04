@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+/** Logique métier d'inscription et de connexion. */
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -20,6 +21,13 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
+    /**
+     * Inscrit un nouvel utilisateur après vérification de l'unicité de l'email et du username.
+     *
+     * @param request données d'inscription validées
+     * @return token JWT et informations de l'utilisateur créé
+     * @throws org.springframework.web.server.ResponseStatusException 409 si email ou username déjà utilisé
+     */
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.email())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Cet email est déjà utilisé");
@@ -40,6 +48,13 @@ public class AuthService {
         return new AuthResponse(token, new AuthResponse.UserInfo(user.getId(), user.getEmail(), user.getUsername()));
     }
 
+    /**
+     * Authentifie un utilisateur par email ou nom d'utilisateur.
+     *
+     * @param request identifiant (email ou username) et mot de passe
+     * @return token JWT et informations de l'utilisateur
+     * @throws org.springframework.security.authentication.BadCredentialsException si identifiants invalides
+     */
     public AuthResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.identifier())
                 .or(() -> userRepository.findByUsername(request.identifier()))

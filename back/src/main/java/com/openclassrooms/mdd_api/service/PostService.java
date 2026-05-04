@@ -17,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
+/** Logique métier de gestion des articles et commentaires. */
 @Service
 @RequiredArgsConstructor
 public class PostService {
@@ -26,6 +27,13 @@ public class PostService {
     private final SubscriptionRepository subscriptionRepository;
     private final CommentRepository commentRepository;
 
+    /**
+     * Retourne les articles des thèmes auxquels l'utilisateur est abonné, triés par date.
+     *
+     * @param user utilisateur dont on charge les abonnements
+     * @param sort {@code "asc"} pour ordre croissant, toute autre valeur donne l'ordre décroissant
+     * @return liste vide si aucun abonnement, sinon articles triés
+     */
     public List<PostSummaryResponse> getFeed(User user, String sort) {
         List<Topic> topics = subscriptionRepository.findByUser(user).stream()
                 .map(sub -> sub.getTopic())
@@ -50,6 +58,14 @@ public class PostService {
                 .toList();
     }
 
+    /**
+     * Crée un article et le persiste en base.
+     *
+     * @param user    auteur de l'article
+     * @param request titre, contenu et identifiant du thème
+     * @return article créé sous forme de résumé
+     * @throws org.springframework.web.server.ResponseStatusException 404 si le thème n'existe pas
+     */
     public PostSummaryResponse create(User user, CreatePostRequest request) {
         Topic topic = topicRepository.findById(request.topicId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Thème introuvable"));
@@ -73,6 +89,13 @@ public class PostService {
         );
     }
 
+    /**
+     * Retourne un article complet avec ses commentaires.
+     *
+     * @param postId identifiant de l'article
+     * @return détail de l'article et liste de ses commentaires
+     * @throws org.springframework.web.server.ResponseStatusException 404 si l'article n'existe pas
+     */
     public PostDetailResponse getById(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Article introuvable"));
@@ -97,6 +120,15 @@ public class PostService {
         );
     }
 
+    /**
+     * Ajoute un commentaire à un article existant.
+     *
+     * @param user    auteur du commentaire
+     * @param postId  identifiant de l'article cible
+     * @param request contenu du commentaire
+     * @return commentaire créé
+     * @throws org.springframework.web.server.ResponseStatusException 404 si l'article n'existe pas
+     */
     public CommentResponse addComment(User user, Long postId, CreateCommentRequest request) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Article introuvable"));
