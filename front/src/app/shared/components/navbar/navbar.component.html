@@ -1,0 +1,27 @@
+<mat-toolbar color="primary" class="navbar">
+  <a routerLink="/feed" class="navbar-logo">
+    <app-logo [size]="100" />
+  </a>
+
+  <span class="spacer"></span>
+
+  <nav class="nav-desktop">
+    <button mat-button (click)="logout()">Se déconnecter</button>
+    <a mat-button routerLink="/feed" routerLinkActive="nav-active">Articles</a>
+    <a mat-button routerLink="/topics" routerLinkActive="nav-active">Thèmes</a>
+    <a mat-icon-button routerLink="/profile" routerLinkActive="nav-active">
+      <mat-icon>account_circle</mat-icon>
+    </a>
+  </nav>
+
+  <button mat-icon-button class="nav-mobile" [matMenuTriggerFor]="mobileMenu">
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <mat-menu #mobileMenu="matMenu">
+    <a mat-menu-item routerLink="/feed">Articles</a>
+    <a mat-menu-item routerLink="/topics">Thèmes</a>
+    <a mat-menu-item routerLink="/profile">Mon profil</a>
+    <button mat-menu-item (click)="logout()">Se déconnecter</button>
+  </mat-menu>
+</mat-toolbar>

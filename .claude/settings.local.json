@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git *)",
+      "Bash(mvn *)",
+      "Bash(npm *)",
+      "Bash(npx *)",
+      "Bash(ng *)",
+      "Bash(java *)",
+      "Skill(update-config)",
+      "Bash(./mvnw compile *)",
+      "Bash(python3 -c ' *)",
+      "Bash(javac -version)",
+      "Bash(python3 *)",
+      "Bash(node *)",
+      "WebFetch(domain:www.figma.com)",
+      "Read(//c/Users/vsiff/**)",
+      "Bash(Get-ChildItem -Path \"C:\\\\_git\\\\vsiffermann\\\\Developpez-une-application-full-stack-complete\\\\back\\\\src\\\\main\\\\java\\\\com\\\\openclassrooms\\\\mdd_api\" -Recurse -Filter \"*.java\")",
+      "Bash(Select-Object FullName)"
+    ]
+  }
+}

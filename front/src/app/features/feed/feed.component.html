@@ -1,0 +1,48 @@
+<app-navbar />
+
+<div class="feed-container">
+  <div class="feed-header">
+    <button mat-raised-button color="primary" routerLink="/posts/new">
+      Créer un article
+    </button>
+    @if ((posts$ | async)?.length) {
+      <div class="sort-bar">
+        <span>Trier par :</span>
+        <button mat-button (click)="toggleSort(sortOrder())">
+          <mat-icon>{{ sortOrder() === 'desc' ? 'arrow_downward' : 'arrow_upward' }}</mat-icon>
+          {{ sortOrder() === 'desc' ? 'Plus récent' : 'Plus ancien' }}
+        </button>
+      </div>
+    }
+  </div>
+
+  @if (loading$ | async) {
+    <div class="spinner-wrapper">
+      <mat-spinner diameter="48" />
+    </div>
+  } @else {
+    @if (posts$ | async; as posts) {
+      @if (posts.length > 0) {
+        <div class="post-grid">
+          @for (post of posts; track post.id) {
+            <mat-card class="post-card" [routerLink]="['/posts', post.id]">
+              <mat-card-content>
+                <h2 class="post-title">{{ post.title }}</h2>
+                <div class="post-meta">
+                  <span class="post-author">{{ post.authorUsername }}</span>
+                  <span class="post-date">{{ post.createdAt | date:'d MMM yyyy' }}</span>
+                  <mat-chip-set>
+                    <mat-chip>{{ post.topicName }}</mat-chip>
+                  </mat-chip-set>
+                </div>
+                <p class="post-excerpt">{{ post.content | slice:0:200 }}{{ post.content.length > 200 ? '…' : '' }}</p>
+              </mat-card-content>
+            </mat-card>
+          }
+        </div>
+      } @else {
+        <p class="empty-state">Abonnez-vous à des thèmes pour voir des articles ici.</p>
+      }
+    }
+  }
+</div>

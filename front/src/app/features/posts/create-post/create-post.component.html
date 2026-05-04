@@ -1,0 +1,52 @@
+<app-navbar />
+
+<div class="create-post-container">
+  <button mat-button (click)="goBack()">
+    <mat-icon>arrow_back</mat-icon>
+    Retour
+  </button>
+
+  <h1>Créer un nouvel article</h1>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="outline">
+      <mat-label>Titre de l'article</mat-label>
+      <input matInput formControlName="title" />
+      @if (form.controls.title.hasError('required') && form.controls.title.touched) {
+        <mat-error>Le titre est requis</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Catégorie</mat-label>
+      <mat-select formControlName="topicId">
+        @for (topic of topics$ | async; track topic.id) {
+          <mat-option [value]="topic.id">{{ topic.name }}</mat-option>
+        }
+      </mat-select>
+      @if (form.controls.topicId.hasError('required') && form.controls.topicId.touched) {
+        <mat-error>La catégorie est requise</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Contenu de l'article</mat-label>
+      <textarea matInput formControlName="content" rows="12"></textarea>
+      @if (form.controls.content.hasError('required') && form.controls.content.touched) {
+        <mat-error>Le contenu est requis</mat-error>
+      }
+    </mat-form-field>
+
+    @if (error$ | async; as error) {
+      <p class="server-error">{{ error }}</p>
+    }
+
+    <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || (loading$ | async)">
+      @if (loading$ | async) {
+        Publication en cours…
+      } @else {
+        Créer
+      }
+    </button>
+  </form>
+</div>

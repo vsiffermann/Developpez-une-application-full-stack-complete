@@ -1,0 +1,46 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <a class="back-btn" routerLink="/">
+      <mat-icon>arrow_back</mat-icon>
+    </a>
+
+    <div class="auth-logo">
+      <app-logo [size]="300" />
+    </div>
+
+    <h1>Se connecter</h1>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="outline">
+        <mat-label>E-mail ou nom d'utilisateur</mat-label>
+        <input matInput formControlName="identifier" autocomplete="username" />
+        @if (form.controls.identifier.hasError('required') && form.controls.identifier.touched) {
+          <mat-error>L'identifiant est requis</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Mot de passe</mat-label>
+        <input matInput [type]="showPassword() ? 'text' : 'password'" formControlName="password" autocomplete="current-password" />
+        <button mat-icon-button matSuffix type="button" (click)="showPassword.set(!showPassword())">
+          <mat-icon>{{ showPassword() ? 'visibility' : 'visibility_off' }}</mat-icon>
+        </button>
+        @if (form.controls.password.hasError('required') && form.controls.password.touched) {
+          <mat-error>Le mot de passe est requis</mat-error>
+        }
+      </mat-form-field>
+
+      @if (error$ | async; as error) {
+        <p class="server-error">{{ error }}</p>
+      }
+
+      <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || (loading$ | async)">
+        @if (loading$ | async) {
+          Connexion en cours…
+        } @else {
+          Se connecter
+        }
+      </button>
+    </form>
+  </div>
+</div>

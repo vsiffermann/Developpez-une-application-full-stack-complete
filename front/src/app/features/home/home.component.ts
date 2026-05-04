@@ -1,0 +1,13 @@
+import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { LogoComponent } from '../../shared/components/logo/logo.component';
+
+@Component({
+  selector: 'app-home',
+  standalone: true,
+  imports: [RouterLink, MatButtonModule, LogoComponent],
+  templateUrl: './home.component.html',
+  styleUrl: './home.component.scss',
+})
+export class HomeComponent {}
