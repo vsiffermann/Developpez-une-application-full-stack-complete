@@ -1,7 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { AsyncPipe, DatePipe, SlicePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { provideMockStore, MockStore } from '@ngrx/store/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { provideRouter } from '@angular/router';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { FeedComponent } from './feed.component';
 import { PostsActions } from '../../store/posts/posts.actions';
 
@@ -10,44 +13,52 @@ const mockPosts = [
   { id: 2, title: 'Article 2', content: '...', authorUsername: 'bob', topicName: 'JS', createdAt: new Date().toISOString() },
 ];
 
+const storeInitialState = {
+  posts: { posts: mockPosts, loading: false, error: null, sortOrder: 'desc' },
+  auth: { user: null, token: null, isAuthenticated: false, loading: false, error: null },
+};
+
 describe('FeedComponent', () => {
   let component: FeedComponent;
   let fixture: ComponentFixture<FeedComponent>;
   let store: MockStore;
+  let dispatchSpy: jest.SpyInstance;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FeedComponent, RouterTestingModule, NoopAnimationsModule],
       providers: [
-        provideMockStore({
-          initialState: { posts: { posts: mockPosts, loading: false, error: null, sortOrder: 'desc' } },
-        }),
+        provideRouter([]),
+        provideNoopAnimations(),
+        provideMockStore({ initialState: storeInitialState }),
       ],
-    }).compileComponents();
+    })
+      .overrideComponent(FeedComponent, { set: { imports: [AsyncPipe, DatePipe, SlicePipe, RouterLink], schemas: [NO_ERRORS_SCHEMA] } })
+      .compileComponents();
 
     fixture = TestBed.createComponent(FeedComponent);
     component = fixture.componentInstance;
     store = TestBed.inject(MockStore);
+    dispatchSpy = jest.spyOn(store, 'dispatch');
     fixture.detectChanges();
   });
 
   it('should create', () => {
-    // TODO: expect(component).toBeTruthy()
+    expect(component).toBeTruthy();
   });
 
   it('should dispatch loadFeed on init', () => {
-    // TODO: expect store.dispatch appelé avec PostsActions.loadFeed()
+    expect(dispatchSpy).toHaveBeenCalledWith(PostsActions.loadFeed({ sort: 'desc' }));
   });
 
-  it('should display posts from the store', () => {
-    // TODO: expect le template à afficher 2 cartes d'articles
+  it('should dispatch setSortOrder when toggling from desc', () => {
+    dispatchSpy.mockClear();
+    component.toggleSort('desc');
+    expect(dispatchSpy).toHaveBeenCalledWith(PostsActions.setSortOrder({ sort: 'asc' }));
   });
 
-  it('should display empty state when no posts', () => {
-    // TODO: override store state avec posts=[], then expect message "Aucun article"
-  });
-
-  it('should dispatch setSortOrder and reload on sort change', () => {
-    // TODO: appeler la méthode de tri avec 'asc', then expect 2 dispatchs : setSortOrder + loadFeed
+  it('should dispatch setSortOrder when toggling from asc', () => {
+    dispatchSpy.mockClear();
+    component.toggleSort('asc');
+    expect(dispatchSpy).toHaveBeenCalledWith(PostsActions.setSortOrder({ sort: 'desc' }));
   });
 });
