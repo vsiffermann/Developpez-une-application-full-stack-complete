@@ -1,4 +1,5 @@
-import { ApplicationConfig, isDevMode, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { APP_INITIALIZER, ApplicationConfig, isDevMode, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { Store } from '@ngrx/store';
 import { provideRouter } from '@angular/router';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
@@ -14,6 +15,15 @@ import * as AuthEffects from './store/auth/auth.effects';
 import * as PostsEffects from './store/posts/posts.effects';
 import * as TopicsEffects from './store/topics/topics.effects';
 import { jwtInterceptor } from './core/interceptors/jwt.interceptor';
+import { AuthActions } from './store/auth/auth.actions';
+
+function initAuth(store: Store) {
+  return () => {
+    if (localStorage.getItem('mdd_token')) {
+      store.dispatch(AuthActions.loadUser());
+    }
+  };
+}
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -27,6 +37,12 @@ export const appConfig: ApplicationConfig = {
       topics: topicsReducer,
     }),
     provideEffects(AuthEffects, PostsEffects, TopicsEffects),
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initAuth,
+      deps: [Store],
+      multi: true,
+    },
     ...(isDevMode()
       ? [provideStoreDevtools({ maxAge: 25, logOnly: false })]
       : []),
