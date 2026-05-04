@@ -9,10 +9,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.server.ResponseStatusException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -25,38 +30,90 @@ class UserServiceTest {
 
     @Test
     void getProfile_returnsUserResponse() {
-        // given a User with id, email, and username, when getProfile is called, then a UserResponse with matching fields is returned
+        User user = User.builder().id(1L).email("alice@test.com").username("alice").build();
+
+        UserResponse response = userService.getProfile(user);
+
+        assertThat(response.id()).isEqualTo(1L);
+        assertThat(response.email()).isEqualTo("alice@test.com");
+        assertThat(response.username()).isEqualTo("alice");
     }
 
     // --- updateProfile ---
 
     @Test
     void updateProfile_emailChange_success() {
-        // given a new email that is not already taken, when updateProfile is called, then the user's email is updated and saved
+        User user = User.builder().id(1L).email("old@test.com").username("alice").build();
+        UpdateProfileRequest request = new UpdateProfileRequest("new@test.com", null, null);
+
+        when(userRepository.existsByEmail("new@test.com")).thenReturn(false);
+        when(userRepository.save(user)).thenReturn(user);
+
+        userService.updateProfile(user, request);
+
+        assertThat(user.getEmail()).isEqualTo("new@test.com");
+        verify(userRepository).save(user);
     }
 
     @Test
     void updateProfile_emailAlreadyUsed_throwsConflict() {
-        // given a new email that already exists in the repository, when updateProfile is called, then a ResponseStatusException with status 409 is thrown
+        User user = User.builder().id(1L).email("old@test.com").username("alice").build();
+        UpdateProfileRequest request = new UpdateProfileRequest("taken@test.com", null, null);
+
+        when(userRepository.existsByEmail("taken@test.com")).thenReturn(true);
+
+        assertThatThrownBy(() -> userService.updateProfile(user, request))
+                .isInstanceOf(ResponseStatusException.class)
+                .satisfies(e -> assertThat(((ResponseStatusException) e).getStatusCode()).isEqualTo(HttpStatus.CONFLICT));
     }
 
     @Test
     void updateProfile_usernameChange_success() {
-        // given a new username that is not already taken, when updateProfile is called, then the user's username is updated and saved
+        User user = User.builder().id(1L).email("alice@test.com").username("oldname").build();
+        UpdateProfileRequest request = new UpdateProfileRequest(null, "newname", null);
+
+        when(userRepository.existsByUsername("newname")).thenReturn(false);
+        when(userRepository.save(user)).thenReturn(user);
+
+        userService.updateProfile(user, request);
+
+        assertThat(user.getUsername()).isEqualTo("newname");
+        verify(userRepository).save(user);
     }
 
     @Test
     void updateProfile_usernameAlreadyUsed_throwsConflict() {
-        // given a new username that already exists in the repository, when updateProfile is called, then a ResponseStatusException with status 409 is thrown
+        User user = User.builder().id(1L).email("alice@test.com").username("oldname").build();
+        UpdateProfileRequest request = new UpdateProfileRequest(null, "takenname", null);
+
+        when(userRepository.existsByUsername("takenname")).thenReturn(true);
+
+        assertThatThrownBy(() -> userService.updateProfile(user, request))
+                .isInstanceOf(ResponseStatusException.class)
+                .satisfies(e -> assertThat(((ResponseStatusException) e).getStatusCode()).isEqualTo(HttpStatus.CONFLICT));
     }
 
     @Test
     void updateProfile_passwordChange_encodesPassword() {
-        // given a new password in the request, when updateProfile is called, then passwordEncoder.encode is called and the encoded value is saved
+        User user = User.builder().id(1L).email("alice@test.com").username("alice").password("old-encoded").build();
+        UpdateProfileRequest request = new UpdateProfileRequest(null, null, "NewP@ss1");
+
+        when(passwordEncoder.encode("NewP@ss1")).thenReturn("new-encoded");
+        when(userRepository.save(user)).thenReturn(user);
+
+        userService.updateProfile(user, request);
+
+        verify(passwordEncoder).encode("NewP@ss1");
+        assertThat(user.getPassword()).isEqualTo("new-encoded");
     }
 
     @Test
     void updateProfile_noChange_doesNotThrow() {
-        // given email and username in the request are identical to the current user values, when updateProfile is called, then no exception is thrown and the user is saved unchanged
+        User user = User.builder().id(1L).email("alice@test.com").username("alice").build();
+        UpdateProfileRequest request = new UpdateProfileRequest("alice@test.com", "alice", null);
+
+        when(userRepository.save(user)).thenReturn(user);
+
+        assertThatCode(() -> userService.updateProfile(user, request)).doesNotThrowAnyException();
     }
 }
