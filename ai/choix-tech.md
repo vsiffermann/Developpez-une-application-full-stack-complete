@@ -132,23 +132,46 @@ Auth : `Authorization: Bearer <token>`
 
 ## 3.1 Stratégie de test
 
-| Type             | Outil            | Portée               | Résultat |
-| ---------------- | ---------------- | -------------------- | -------- |
-| Test unitaire BE | JUnit + Mockito  | Services             | ≥ 70%    |
-| Test intégration | Spring Boot Test | API                  | OK       |
-| Test unitaire FE | Jest             | Composants           | ≥ 70%    |
-| Test E2E         | Cypress          | Parcours utilisateur | OK       |
+| Type | Outil | Portée | Tests | Résultat |
+| --- | --- | --- | --- | --- |
+| Tests unitaires BE | JUnit 5 + Mockito | Services | 31 | ✅ 0 échec |
+| Tests intégration BE | Spring Boot Test + MockMvc + H2 | Controllers | 33 | ✅ 0 échec |
+| Tests unitaires FE | Jest — reducers, selectors, guard | Store NgRx | 40 | ✅ 0 échec |
+| Tests unitaires FE | Jest — composants avec MockStore | Composants | 37 | ✅ 0 échec |
+| Tests unitaires FE | Jest — effets NgRx | Effets HTTP | 35 | ✅ 0 échec |
+| Tests E2E | Cypress | Parcours utilisateur | 34 | ✅ 0 échec |
+| **Total** | | | **210** | **✅ 0 échec** |
+
+### Couverture front-end (Jest — `npm run test:coverage`)
+
+| Métrique | Résultat | Objectif |
+| --- | --- | --- |
+| Statements | 85% | ≥ 70% ✅ |
+| Branches | 80% | ≥ 70% ✅ |
+| Functions | 71% | ≥ 70% ✅ |
+| Lines | 88% | ≥ 70% ✅ |
+
+Rapport HTML : `front/coverage/index.html`  
+Rapport JaCoCo (back) : `back/target/site/jacoco/index.html` (après `./mvnw test`)  
+Rapport Cypress fusionné : `front/cypress/results/report.html` (après `npm run cypress:report`)
+
+Pour plus de détails sur les choix de test, voir `ai/tests.md`.
 
 ---
 
 ## 3.2 Performance et optimisation
 
-Prévu :
+Mesures en place :
 
-* Lazy loading Angular
-* Pagination du feed
-* Audit Lighthouse ≥ 80
-* Index MySQL
+* **Lazy loading Angular** — chaque route charge son composant à la demande (`loadComponent`)
+* **Tri côté serveur** — le paramètre `?sort=desc|asc` est traité par Spring Data (`Sort.Direction`)
+* **Données de test isolées** — migrations Flyway séparées (V6 topics, V7 seed complet)
+
+Pistes d'amélioration non implémentées (hors périmètre MVP) :
+
+* Pagination du fil d'actualité
+* Index MySQL sur `post.created_at` et `subscription.user_id`
+* Audit Lighthouse
 
 ---
 
@@ -156,39 +179,117 @@ Prévu :
 
 ### Points forts
 
-* Architecture SOLID
-* API REST claire
-* Angular standalone
+**Architecture**
+- Séparation claire des responsabilités : Controller → Service → Repository → Entity/DTO
+- Respect des principes SOLID : chaque classe a une responsabilité unique, les dépendances sont injectées
+- API REST cohérente avec des codes HTTP sémantiques (200, 201, 400, 401, 404, 409)
+- Gestion centralisée des erreurs via `@RestControllerAdvice`
 
-### Améliorations
+**Sécurité**
+- Authentification stateless via JWT (HS256, signé Auth0 java-jwt)
+- Spring Security configuré pour rejeter toute requête non authentifiée par défaut
+- Mots de passe encodés BCrypt
+- Validation des entrées côté back (`@Valid`, `@Pattern`, `@Email`) et côté front (Validators Angular)
 
-* Spring Boot 4 récent
-* Angular 21 peu supporté
-* JWT en localStorage (à sécuriser)
+**Front-end**
+- Composants standalone Angular 21 : pas de NgModule, imports explicites
+- State management NgRx avec effets fonctionnels : logique métier centralisée, composants purement présentationnels
+- `APP_INITIALIZER` pour recharger l'utilisateur depuis le JWT au démarrage — évite une session vide après rechargement de page
+
+**Tests**
+- 210 tests automatisés couvrant tous les niveaux (unitaire, intégration, E2E)
+- Couverture front ≥ 70% sur les 4 métriques Jest
+- Tests d'intégration back avec base H2 + Flyway : proche des conditions réelles sans dépendance à MySQL
+
+### Axes d'amélioration
+
+**Sécurité**
+- Le JWT est stocké en `localStorage`, ce qui l'expose aux attaques XSS. Une alternative plus sûre serait un cookie `HttpOnly` géré par le serveur.
+- Aucun mécanisme de rafraîchissement du token (refresh token) : la session expire après 24h sans possibilité de renouvellement silencieux.
+- Pas de rate limiting sur les endpoints publics (`/auth/register`, `/auth/login`).
+
+**Architecture**
+- Spring Boot 4 et Angular 21 sont des versions très récentes avec moins de retours d'expérience en production. Ce choix délibéré pour l'apprentissage implique un risque de compatibilité sur certaines librairies tierces.
+- Le fil d'actualité n'est pas paginé : avec un grand nombre d'articles, les performances se dégraderaient.
+
+**Fonctionnel**
+- Pas de système de notification en temps réel (WebSocket ou SSE).
+- Pas de gestion des images pour les profils ou les articles.
+- La recherche d'articles n'est pas implémentée.
+
+### Recommandations
+
+1. **Court terme** — Ajouter un mécanisme de refresh token et migrer le JWT vers un cookie `HttpOnly` pour renforcer la sécurité.
+2. **Moyen terme** — Paginer le fil d'actualité (paramètre `page` + `size` côté API, scroll infini ou pagination côté Angular).
+3. **Long terme** — Envisager des index MySQL sur les colonnes fréquemment filtrées (`subscription.user_id`, `post.created_at`) et un audit Lighthouse pour valider les performances front.
 
 ---
 
 # 4. Documentation utilisateur et supervision
 
-## 4.1 FAQ
+## 4.1 FAQ utilisateur
 
-**Créer un compte**
-→ Page d’accueil > S’inscrire
+### Compte et connexion
 
-**Connexion**
-→ Email ou username
+**Comment créer un compte ?**  
+Rendez-vous sur la page d’accueil et cliquez sur "S’inscrire". Renseignez un nom d’utilisateur (3 caractères minimum), une adresse e-mail valide et un mot de passe sécurisé (8 caractères minimum, une majuscule, une minuscule, un chiffre et un caractère spécial parmi `@$!%*?&#`).
 
-**Session**
-→ Persistante sauf logout
+**Comment se connecter ?**  
+Depuis la page de connexion, saisissez votre adresse e-mail **ou** votre nom d’utilisateur, puis votre mot de passe.
 
-**S’abonner**
-→ Page thèmes
+**La session est-elle persistante ?**  
+Oui. Le token JWT est conservé dans le navigateur. Vous restez connecté jusqu’à ce que vous cliquiez sur "Se déconnecter" ou que le token expire (24h).
 
-**Se désabonner**
-→ Profil
+**J’ai oublié mon mot de passe.**  
+Il n’existe pas encore de fonctionnalité de réinitialisation par e-mail dans ce MVP. Contactez l’administrateur.
 
-**Bug chargement**
-→ Refresh / vérifier backend
+---
+
+### Thèmes et fil d’actualité
+
+**Comment s’abonner à un thème ?**  
+Rendez-vous sur la page "Thèmes" (accessible depuis la barre de navigation). Cliquez sur le bouton "S’abonner" de la carte correspondante. Le bouton passe en "Se désabonner" pour confirmer l’abonnement.
+
+**Comment se désabonner d’un thème ?**  
+Depuis la page "Profil", la section "Abonnements" liste vos thèmes actifs. Cliquez sur "Se désabonner" pour retirer un abonnement. Vous pouvez également le faire directement depuis la page "Thèmes".
+
+**Le fil d’actualité est vide.**  
+Le fil affiche uniquement les articles des thèmes auxquels vous êtes abonné. S’il est vide, abonnez-vous à au moins un thème depuis la page "Thèmes".
+
+**Comment trier les articles ?**  
+Un bouton de tri est disponible en haut du fil. Il bascule entre "Plus récent" (ordre chronologique descendant) et "Plus ancien" (ascendant).
+
+---
+
+### Articles et commentaires
+
+**Comment créer un article ?**  
+Depuis le fil d’actualité, cliquez sur "Créer un article". Renseignez un titre, sélectionnez un thème dans la liste déroulante et rédigez le contenu. Cliquez sur "Créer" pour publier.
+
+**Puis-je modifier ou supprimer un article ?**  
+Non. La modification et la suppression d’articles ne font pas partie du périmètre de ce MVP.
+
+**Comment ajouter un commentaire ?**  
+Depuis la page de détail d’un article, rédigez votre commentaire dans le champ en bas de page et cliquez sur l’icône d’envoi. Les commentaires ne peuvent pas être imbriqués.
+
+---
+
+### Problèmes fréquents
+
+**La page ne charge pas / erreur réseau.**  
+Vérifiez que le back-end Spring Boot est bien démarré sur `http://localhost:8080`. Si l’erreur persiste, rafraîchissez la page.
+
+**"Identifiants invalides" à la connexion.**  
+Vérifiez l’orthographe de votre identifiant (e-mail ou nom d’utilisateur) et de votre mot de passe. Les mots de passe sont sensibles à la casse.
+
+**"Email déjà utilisé" à l’inscription.**  
+L’adresse e-mail est déjà associée à un compte. Utilisez une autre adresse ou connectez-vous avec ce compte.
+
+**"Nom d’utilisateur déjà pris" à l’inscription.**  
+Choisissez un nom d’utilisateur différent.
+
+**Le bouton de soumission est grisé.**  
+Le formulaire contient des champs invalides. Vérifiez les messages d’erreur affichés sous chaque champ.
 
 ---
 
@@ -208,21 +309,55 @@ Décrivez les tâches confiées à l'IA, et comment vous avez vérifié, validé
 
 # 5. Annexes
 
-À produire :
+## 5.1 Schéma de base de données (ERD)
 
-* ERD
-* Screens UI
-* Couverture tests
-* Audit Lighthouse
-* Revue technique
-* Swagger
+```
+user
+├── id (PK)
+├── email (UNIQUE)
+├── username (UNIQUE)
+├── password (BCrypt)
+└── created_at
 
----
+topic
+├── id (PK)
+├── name (UNIQUE)
+└── description
 
-## Annexes complémentaires
+subscription
+├── id (PK)
+├── user_id (FK → user)
+├── topic_id (FK → topic)
+└── created_at
+[UNIQUE: user_id + topic_id]
 
-* UI screenshots
-* Analyse front
-* Schémas données
-* Rapports tests
-* Revue technique complète
+post
+├── id (PK)
+├── title
+├── content (TEXT)
+├── author_id (FK → user)
+├── topic_id (FK → topic)
+└── created_at
+
+comment
+├── id (PK)
+├── content (TEXT)
+├── author_id (FK → user)
+├── post_id (FK → post)
+└── created_at
+```
+
+## 5.2 Rapports de tests
+
+| Rapport | Chemin | Commande |
+| --- | --- | --- |
+| Couverture Jest (HTML) | `front/coverage/index.html` | `npm run test:coverage` |
+| Couverture JaCoCo (HTML) | `back/target/site/jacoco/index.html` | `./mvnw test` |
+| Résultats Cypress (HTML) | `front/cypress/results/report.html` | `npm run cypress:report` |
+| Documentation API | http://localhost:8080/swagger-ui.html | (back démarré) |
+
+## 5.3 Collection Postman
+
+Une collection Postman complète est disponible dans `postman/MDD.postman_collection.json`.
+
+Elle couvre les 11 endpoints organisés en 4 dossiers (Auth, Utilisateur, Thèmes, Articles) et configure automatiquement la variable `{{token}}` après un register ou login.
