@@ -88,13 +88,14 @@ Repository, DTO, Service Layer, Builder, Filter Chain, Singleton, Store (Redux/N
 - `application.properties` — configuration publique
 - `application-local.properties` — données sensibles (ignoré par Git)
 - Profil Spring `local` activé
-- 6 migrations Flyway appliquées avec succès :
+- 7 migrations Flyway appliquées avec succès :
   - `V1` — table `user`
   - `V2` — table `topic`
   - `V3` — table `subscription`
   - `V4` — table `post`
   - `V5` — table `comment`
   - `V6` — données de test (5 topics)
+  - `V7` — jeu de données complet (4 utilisateurs, abonnements, 10 articles, 24 commentaires)
 - Back-end démarré sur `http://localhost:8080`
 
 ### Front-end Angular 21
@@ -115,8 +116,6 @@ Repository, DTO, Service Layer, Builder, Filter Chain, Singleton, Store (Redux/N
 main
 └── develop
 ```
-
----
 
 ---
 
@@ -302,14 +301,78 @@ main
 
 ---
 
+## Étape 7 — Tests (complète)
+
+### Tests unitaires back (JUnit + Mockito) — ✅ implémentés
+- `AuthServiceTest` — 7 tests (register success/email/username déjà pris, login email/username/mauvais mdp/user inconnu)
+- `PostServiceTest` — 9 tests (getFeed tri ASC/DESC/sans abonnements, create/getById/addComment succès+erreurs)
+- `TopicServiceTest` — 8 tests (getAll, subscribe/unsubscribe succès+erreurs)
+- `UserServiceTest` — 7 tests (getProfile, updateProfile email/username/password/conflict)
+
+### Tests d'intégration back (Spring Boot MockMvc + H2) — ✅ implémentés
+- `AuthControllerIT` — 8 tests (register valid/email dupliqué/mdp faible/champs manquants, login email/username/mauvais mdp/inconnu)
+- `PostControllerIT` — 12 tests (getFeed avec/sans abonnements/tri/no-token, createPost/getPost/addComment succès+erreurs)
+- `TopicControllerIT` — 7 tests (getTopics, subscribe/unsubscribe succès+conflict+404+no-token)
+- `UserControllerIT` — 5 tests (getProfile, updateProfile username/email pris/no-token)
+- Config H2 : `back/src/test/resources/application-test.properties` (MODE=MySQL + CASE_INSENSITIVE_IDENTIFIERS=TRUE)
+- `pom.xml` : Surefire configuré pour inclure `*IT.java`
+- **Total back : 64 tests, 0 échec** (`mvnw test`)
+
+### Tests unitaires front (Jest) — ✅ complets et fonctionnels
+
+#### Corrections infra (session 2026-05-04)
+- `setup-jest.ts` — corrigé : `setupZonelessTestEnv()` maintenant appelé (Angular 21 zoneless)
+- `jest.config.ts` — `testPathPattern` remplacé par `testRegex` (option valide en config)
+- `app.spec.ts` — supprimé l'assertion `'Hello, front'` (valeur CLI par défaut non applicable)
+
+#### Fichiers de tests (20 suites, 112 tests, 0 échec)
+
+**Reducers** (logique pure — 28 tests) :
+- `auth.reducer.spec.ts` — 11 tests (register/login/logout/updateProfile)
+- `posts.reducer.spec.ts` — 9 tests (loadFeed/setSortOrder/createPost/loadPost/addComment)
+- `topics.reducer.spec.ts` — 8 tests (loadTopics/subscribe/unsubscribe)
+
+**Selectors** (3 fichiers) :
+- `auth.selectors.spec.ts`, `posts.selectors.spec.ts`, `topics.selectors.spec.ts`
+
+**Components** (5 composants testés — 24 tests) :
+- `login.component.spec.ts` — 5 tests (form validity, dispatch)
+- `register.component.spec.ts` — 8 tests (form validity, passwordCriteria, dispatch)
+- `feed.component.spec.ts` — 4 tests (init dispatch, toggle sort)
+- `topics.component.spec.ts` — 4 tests (loadTopics init, subscribe/unsubscribe)
+- `post-detail.component.spec.ts` — 5 tests (loadPost init, goBack, addComment)
+- `create-post.component.spec.ts` — 6 tests (form validity, dispatch, goBack)
+- `profile.component.spec.ts` — 7 tests (pre-fill form, updateProfile, logout, unsubscribe)
+- `home.component.spec.ts` — 1 test (create)
+- `navbar.component.spec.ts` — 2 tests (create, logout)
+
+**Effects** (3 fichiers — 22 tests) :
+- `auth.effects.spec.ts` — register/login/loadUser/updateProfile/registerSuccess/loginSuccess/logout
+- `posts.effects.spec.ts` — loadFeed/setSortOrder/createPost/loadPosteffect/addComment/createPostSuccess
+- `topics.effects.spec.ts` — loadTopics/subscribe/unsubscribe
+
+**Guards** :
+- `auth.guard.spec.ts` — 2 tests (allow/redirect)
+
+#### Couverture finale (`npm run test:coverage`)
+| Métrique | Résultat | Objectif |
+|---|---|---|
+| Statements | 85% (406/477) | ≥ 70% ✅ |
+| Branches | 80% (61/76) | ≥ 70% ✅ |
+| Functions | 71% (103/145) | ≥ 70% ✅ |
+| Lines | 88% (375/426) | ≥ 70% ✅ |
+
+### Tests E2E (Cypress) — ✅ squelettes implémentés (à exécuter avec back+front démarrés)
+- `login.cy.ts`, `register.cy.ts`, `feed.cy.ts`, `create-post.cy.ts`, `post-detail.cy.ts`, `profile.cy.ts`, `topics.cy.ts`
+- Custom commands : `cy.login()`, `cy.loginAsTestUser()`
+
+---
+
 ## Prochaine étape
 
-⚠️ **Validation manuelle obligatoire** :
-- Tester l'application end-to-end (back + front démarrés)
-- Vérifier chaque parcours : accueil, inscription, connexion, fil d'actualité, thèmes, article, commentaire, profil, abonnements
-- Corriger les éventuels bugs découverts
-
-**Étape 7** — Tests :
-- Tests unitaires back (JUnit + Mockito) — couverture ≥ 70%
-- Tests unitaires front (Jest) — composants principaux
-- Tests E2E (Cypress) — parcours utilisateur complets
+**Étape 8 — Finalisation** :
+1. ~~Couverture de tests front~~ ✅ 85% statements, 71% functions, 80% branches
+2. Validation manuelle end-to-end (back + front démarrés, parcourir chaque fonctionnalité)
+3. Nettoyage code (respect SOLID, suppression code mort)
+4. Documentation API finale (Swagger déjà configuré via Springdoc)
+5. Préparation livraison (README, FAQ, annexes dans `ai/choix-tech.md`)
