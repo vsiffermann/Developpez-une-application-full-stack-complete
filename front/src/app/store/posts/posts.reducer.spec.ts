@@ -1,5 +1,25 @@
 import { PostsActions } from './posts.actions';
 import { postsReducer, PostsState } from './posts.reducer';
+import { Post, PostDetail } from '../../shared/models/post.model';
+import { Comment } from '../../shared/models/comment.model';
+
+const mockPost: Post = {
+  id: 1,
+  title: 'Article Test',
+  content: 'Contenu test',
+  authorUsername: 'alice',
+  topicName: 'Java',
+  createdAt: '2026-05-01T10:00:00Z',
+};
+
+const mockComment: Comment = {
+  id: 1,
+  content: 'Super article',
+  authorUsername: 'bob',
+  createdAt: '2026-05-01T11:00:00Z',
+};
+
+const mockPostDetail: PostDetail = { ...mockPost, comments: [mockComment] };
 
 const initialState: PostsState = {
   posts: [],
@@ -12,47 +32,99 @@ const initialState: PostsState = {
 describe('PostsReducer', () => {
   describe('loadFeed', () => {
     it('should set loading=true', () => {
-      // TODO: dispatch PostsActions.loadFeed
+      const state = postsReducer(initialState, PostsActions.loadFeed({ sort: 'desc' }));
+      expect(state.loading).toBe(true);
+      expect(state.error).toBeNull();
     });
 
     it('should populate posts on success', () => {
-      // TODO: dispatch PostsActions.loadFeedSuccess({ posts: [...] }), then expect state.posts rempli
+      const state = postsReducer(
+        initialState,
+        PostsActions.loadFeedSuccess({ posts: [mockPost] })
+      );
+      expect(state.posts).toHaveLength(1);
+      expect(state.posts[0]).toEqual(mockPost);
+      expect(state.loading).toBe(false);
     });
 
     it('should set error on failure', () => {
-      // TODO: dispatch PostsActions.loadFeedFailure
+      const state = postsReducer(
+        { ...initialState, loading: true },
+        PostsActions.loadFeedFailure({ error: 'Erreur réseau' })
+      );
+      expect(state.error).toBe('Erreur réseau');
+      expect(state.loading).toBe(false);
     });
   });
 
   describe('setSortOrder', () => {
     it('should update sortOrder to asc', () => {
-      // TODO: dispatch PostsActions.setSortOrder({ sort: 'asc' }), then expect sortOrder='asc'
+      const state = postsReducer(initialState, PostsActions.setSortOrder({ sort: 'asc' }));
+      expect(state.sortOrder).toBe('asc');
     });
   });
 
   describe('createPost', () => {
     it('should prepend new post to list on success', () => {
-      // TODO: partir d'un état avec 1 post, dispatch createPostSuccess, then expect 2 posts avec le nouveau en premier
+      const existingPost: Post = { ...mockPost, id: 2, title: 'Post existant' };
+      const newPost: Post = { ...mockPost, id: 3, title: 'Nouveau post' };
+      const state = postsReducer(
+        { ...initialState, posts: [existingPost] },
+        PostsActions.createPostSuccess({ post: newPost })
+      );
+      expect(state.posts).toHaveLength(2);
+      expect(state.posts[0]).toEqual(newPost);
     });
   });
 
   describe('loadPost', () => {
     it('should reset currentPost and set loading=true', () => {
-      // TODO: dispatch PostsActions.loadPost, then expect currentPost=null et loading=true
+      const state = postsReducer(
+        { ...initialState, currentPost: mockPostDetail },
+        PostsActions.loadPost({ id: 1 })
+      );
+      expect(state.currentPost).toBeNull();
+      expect(state.loading).toBe(true);
     });
 
     it('should set currentPost on success', () => {
-      // TODO: dispatch PostsActions.loadPostSuccess({ post }), then expect currentPost défini
+      const state = postsReducer(
+        initialState,
+        PostsActions.loadPostSuccess({ post: mockPostDetail })
+      );
+      expect(state.currentPost).toEqual(mockPostDetail);
+      expect(state.loading).toBe(false);
     });
   });
 
   describe('addComment', () => {
     it('should append comment to currentPost.comments on success', () => {
-      // TODO: partir d'un état avec currentPost, dispatch addCommentSuccess, then expect comments.length augmenté
+      const newComment: Comment = {
+        id: 2,
+        content: 'Nouveau commentaire',
+        authorUsername: 'charlie',
+        createdAt: '2026-05-01T12:00:00Z',
+      };
+      const state = postsReducer(
+        { ...initialState, currentPost: mockPostDetail },
+        PostsActions.addCommentSuccess({ comment: newComment })
+      );
+      expect(state.currentPost!.comments).toHaveLength(2);
+      expect(state.currentPost!.comments[1]).toEqual(newComment);
     });
 
     it('should not crash if currentPost is null', () => {
-      // TODO: dispatch addCommentSuccess avec currentPost=null, then expect currentPost reste null
+      const newComment: Comment = {
+        id: 2,
+        content: 'Commentaire',
+        authorUsername: 'dave',
+        createdAt: '2026-05-01T12:00:00Z',
+      };
+      const state = postsReducer(
+        initialState,
+        PostsActions.addCommentSuccess({ comment: newComment })
+      );
+      expect(state.currentPost).toBeNull();
     });
   });
 });
