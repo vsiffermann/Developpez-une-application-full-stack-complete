@@ -13,7 +13,8 @@
       "Bash(javac -version)",
       "Bash(python3 *)",
       "Bash(node *)",
-      "WebFetch(domain:www.figma.com)"
+      "WebFetch(domain:www.figma.com)",
+      "Read(//c/Users/vsiff/**)"
     ]
   }
 }
