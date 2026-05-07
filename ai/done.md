@@ -379,25 +379,10 @@ main
 | Documentation API Swagger | ✅ Springdoc configuré — http://localhost:8080/swagger-ui.html |
 | README, FAQ, choix-tech.md, ai/tests.md | ✅ Produits et commités |
 | Merge develop → main + tag v1.0.0 | ✅ Pushé sur GitHub |
-| **Validation manuelle end-to-end** | ⏳ À faire — back + front démarrés, parcourir les 13 fonctionnalités |
+| **Validation manuelle end-to-end** | ✅ Validé le 2026-05-07 |
 
 ---
 
 ## Prochaine étape
 
-**Validation manuelle end-to-end** (à faire en 2026-05-05) :
-
-Démarrer les serveurs :
-- `cd back && ./mvnw spring-boot:run`
-- `cd front && npm start`
-
-Checklist sur http://localhost:4200 :
-- [ ] Inscription avec un nouvel email
-- [ ] Connexion par email
-- [ ] Connexion par nom d'utilisateur
-- [ ] Consultation et modification du profil
-- [ ] Liste des thèmes + abonnement + désabonnement
-- [ ] Fil d'actualité (articles visibles, tri asc/desc)
-- [ ] Création d'un article
-- [ ] Consultation d'un article + ajout de commentaire
-- [ ] Déconnexion
+Le projet est terminé. Toutes les étapes sont validées — le MVP est fonctionnel, testé et documenté.
