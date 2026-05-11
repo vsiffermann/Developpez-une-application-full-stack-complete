@@ -1,0 +1,200 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 6,
+    "passes": 6,
+    "pending": 0,
+    "failures": 0,
+    "start": "2026-05-04T11:15:16.489Z",
+    "end": "2026-05-04T11:15:19.173Z",
+    "duration": 2684,
+    "testsRegistered": 6,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "ef7a7b68-8deb-4ee5-9efa-6afae8d706b5",
+      "title": "",
+      "fullFile": "cypress\\e2e\\feed\\feed.cy.ts",
+      "file": "cypress\\e2e\\feed\\feed.cy.ts",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "a0eb731e-4059-4dce-8887-60b59fff768f",
+          "title": "Feed",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "should display the list of posts from subscribed topics",
+              "fullTitle": "Feed should display the list of posts from subscribed topics",
+              "timedOut": null,
+              "duration": 804,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.get('.post-card').should('have.length.at.least', 1);",
+              "err": {},
+              "uuid": "befa7170-6812-4aa3-8696-1ea4cbfec6b0",
+              "parentUUID": "a0eb731e-4059-4dce-8887-60b59fff768f",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should display an empty state when user has no subscriptions",
+              "fullTitle": "Feed should display an empty state when user has no subscriptions",
+              "timedOut": null,
+              "duration": 461,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const unique = Date.now();\ncy.request('POST', '/api/auth/register', {\n    email: `fresh${unique}@test.com`,\n    username: `fresh${unique}`,\n    password: 'Test@1234',\n}).then((res) => {\n    localStorage.setItem('mdd_token', res.body.token);\n});\ncy.visit('/feed');\ncy.get('.empty-state').should('be.visible');",
+              "err": {},
+              "uuid": "c0d9aa8b-5969-4309-a069-0250835e7b4f",
+              "parentUUID": "a0eb731e-4059-4dce-8887-60b59fff768f",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should switch to ascending sort order",
+              "fullTitle": "Feed should switch to ascending sort order",
+              "timedOut": null,
+              "duration": 320,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.get('.post-card').should('have.length.at.least', 2);\n// En état initial (desc), le bouton affiche \"Plus récent\" — cliquer bascule en asc\ncy.contains('button', /plus récent/i).click();\ncy.contains('button', /plus ancien/i).should('be.visible');",
+              "err": {},
+              "uuid": "60801d86-07b7-4c05-9e0a-be3ba275aa66",
+              "parentUUID": "a0eb731e-4059-4dce-8887-60b59fff768f",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should switch back to descending sort order",
+              "fullTitle": "Feed should switch back to descending sort order",
+              "timedOut": null,
+              "duration": 405,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.get('.post-card').should('have.length.at.least', 2);\ncy.contains('button', /plus récent/i).click();\ncy.contains('button', /plus ancien/i).click();\ncy.contains('button', /plus récent/i).should('be.visible');",
+              "err": {},
+              "uuid": "7ea2379d-2d3f-4496-8827-e1a8b90aacab",
+              "parentUUID": "a0eb731e-4059-4dce-8887-60b59fff768f",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should navigate to post detail on card click",
+              "fullTitle": "Feed should navigate to post detail on card click",
+              "timedOut": null,
+              "duration": 310,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.get('.post-card').first().click();\ncy.url().should('match', /\\/posts\\/\\d+/);",
+              "err": {},
+              "uuid": "0b852e98-f46c-42a8-9a35-d7f3a66ff9d0",
+              "parentUUID": "a0eb731e-4059-4dce-8887-60b59fff768f",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should navigate to create post page",
+              "fullTitle": "Feed should navigate to create post page",
+              "timedOut": null,
+              "duration": 279,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.contains('button', /créer un article/i).click();\ncy.url().should('include', '/posts/new');",
+              "err": {},
+              "uuid": "de922212-93fa-4e19-a999-d7855c79424e",
+              "parentUUID": "a0eb731e-4059-4dce-8887-60b59fff768f",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "befa7170-6812-4aa3-8696-1ea4cbfec6b0",
+            "c0d9aa8b-5969-4309-a069-0250835e7b4f",
+            "60801d86-07b7-4c05-9e0a-be3ba275aa66",
+            "7ea2379d-2d3f-4496-8827-e1a8b90aacab",
+            "0b852e98-f46c-42a8-9a35-d7f3a66ff9d0",
+            "de922212-93fa-4e19-a999-d7855c79424e"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 2579,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.4"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/results/raw",
+        "overwrite": false,
+        "html": false,
+        "json": true
+      },
+      "version": "6.3.2"
+    }
+  }
+}

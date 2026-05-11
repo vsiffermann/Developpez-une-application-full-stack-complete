@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TopicController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report"></a> &gt; <a href="index.source.html" class="el_package">com.openclassrooms.mdd_api.controller</a> &gt; <span class="el_source">TopicController.java</span></div><h1>TopicController.java</h1><pre class="source lang-java linenums">package com.openclassrooms.mdd_api.controller;
+
+import com.openclassrooms.mdd_api.dto.TopicResponse;
+import com.openclassrooms.mdd_api.entity.User;
+import com.openclassrooms.mdd_api.service.TopicService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping(&quot;/api/topics&quot;)
+@RequiredArgsConstructor
+public class TopicController {
+
+    private final TopicService topicService;
+
+    @GetMapping
+    public ResponseEntity&lt;List&lt;TopicResponse&gt;&gt; getAll(@AuthenticationPrincipal User user) {
+<span class="fc" id="L23">        return ResponseEntity.ok(topicService.getAll(user));</span>
+    }
+
+    @PostMapping(&quot;/{id}/subscribe&quot;)
+    public ResponseEntity&lt;Map&lt;String, String&gt;&gt; subscribe(
+            @AuthenticationPrincipal User user,
+            @PathVariable Long id) {
+<span class="fc" id="L30">        topicService.subscribe(user, id);</span>
+<span class="fc" id="L31">        return ResponseEntity.ok(Map.of(&quot;message&quot;, &quot;Abonnement effectué&quot;));</span>
+    }
+
+    @DeleteMapping(&quot;/{id}/subscribe&quot;)
+    public ResponseEntity&lt;Map&lt;String, String&gt;&gt; unsubscribe(
+            @AuthenticationPrincipal User user,
+            @PathVariable Long id) {
+<span class="fc" id="L38">        topicService.unsubscribe(user, id);</span>
+<span class="fc" id="L39">        return ResponseEntity.ok(Map.of(&quot;message&quot;, &quot;Désabonnement effectué&quot;));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

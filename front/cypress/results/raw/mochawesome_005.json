@@ -1,0 +1,181 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 5,
+    "passes": 5,
+    "pending": 0,
+    "failures": 0,
+    "start": "2026-05-04T11:15:37.875Z",
+    "end": "2026-05-04T11:15:40.691Z",
+    "duration": 2816,
+    "testsRegistered": 5,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "a4a5c8d0-3c27-4639-aa1a-2d0c1c6a770b",
+      "title": "",
+      "fullFile": "cypress\\e2e\\posts\\post-detail.cy.ts",
+      "file": "cypress\\e2e\\posts\\post-detail.cy.ts",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "5bc081bf-8df2-4257-8150-094afdc126d7",
+          "title": "Post Detail",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "should display the post title, author, topic and content",
+              "fullTitle": "Post Detail should display the post title, author, topic and content",
+              "timedOut": null,
+              "duration": 697,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "visitFirstPost();\ncy.get('article h1').should('be.visible');\ncy.get('.post-meta').should('be.visible');\ncy.get('.topic-badge').should('be.visible');\ncy.get('.post-content').should('be.visible');",
+              "err": {},
+              "uuid": "12961ef2-6652-4fa9-b302-02af729d8d7f",
+              "parentUUID": "5bc081bf-8df2-4257-8150-094afdc126d7",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should display the comments section",
+              "fullTitle": "Post Detail should display the comments section",
+              "timedOut": null,
+              "duration": 351,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "visitFirstPost();\ncy.get('.comments-section').should('be.visible');\ncy.get('h2').contains(/commentaire/i).should('be.visible');",
+              "err": {},
+              "uuid": "bd8bb12f-71ba-4d9f-a881-f1a9142543cf",
+              "parentUUID": "5bc081bf-8df2-4257-8150-094afdc126d7",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should add a comment and display it in the list",
+              "fullTitle": "Post Detail should add a comment and display it in the list",
+              "timedOut": null,
+              "duration": 878,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "visitFirstPost();\nconst commentText = `Commentaire Cypress ${Date.now()}`;\ncy.get('.comment-form textarea').type(commentText, { force: true });\ncy.get('.comment-form button').click();\ncy.contains(commentText).should('be.visible');",
+              "err": {},
+              "uuid": "dbd07ee7-34ba-49cd-90a3-7030489b1723",
+              "parentUUID": "5bc081bf-8df2-4257-8150-094afdc126d7",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should keep the send button disabled when comment is empty",
+              "fullTitle": "Post Detail should keep the send button disabled when comment is empty",
+              "timedOut": null,
+              "duration": 333,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "visitFirstPost();\ncy.get('.comment-form button').should('be.disabled');",
+              "err": {},
+              "uuid": "1fe3d06e-888e-4849-8b66-c738500150d0",
+              "parentUUID": "5bc081bf-8df2-4257-8150-094afdc126d7",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should navigate back on back button click",
+              "fullTitle": "Post Detail should navigate back on back button click",
+              "timedOut": null,
+              "duration": 441,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "visitFirstPost();\ncy.contains('button', /retour/i).click();\ncy.url().should('include', '/feed');",
+              "err": {},
+              "uuid": "25abb98e-94cc-46e9-9103-5c050db534ae",
+              "parentUUID": "5bc081bf-8df2-4257-8150-094afdc126d7",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "12961ef2-6652-4fa9-b302-02af729d8d7f",
+            "bd8bb12f-71ba-4d9f-a881-f1a9142543cf",
+            "dbd07ee7-34ba-49cd-90a3-7030489b1723",
+            "1fe3d06e-888e-4849-8b66-c738500150d0",
+            "25abb98e-94cc-46e9-9103-5c050db534ae"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 2700,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.4"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/results/raw",
+        "overwrite": false,
+        "html": false,
+        "json": true
+      },
+      "version": "6.3.2"
+    }
+  }
+}

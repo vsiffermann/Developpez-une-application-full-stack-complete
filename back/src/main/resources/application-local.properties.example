@@ -1,0 +1,6 @@
+n# Base de donnees
+spring.datasource.username=root
+spring.datasource.password=changeme
+
+# JWT
+jwt.secret=change-this-to-a-32-character-secret-key-minimum

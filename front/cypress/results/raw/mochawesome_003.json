@@ -1,0 +1,200 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 6,
+    "passes": 6,
+    "pending": 0,
+    "failures": 0,
+    "start": "2026-05-04T11:15:29.195Z",
+    "end": "2026-05-04T11:15:33.087Z",
+    "duration": 3892,
+    "testsRegistered": 6,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "fa112899-e72d-4f29-87ca-d1c7b87d1db6",
+      "title": "",
+      "fullFile": "cypress\\e2e\\profile\\profile.cy.ts",
+      "file": "cypress\\e2e\\profile\\profile.cy.ts",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "c739e069-a7ff-43b0-96a1-2956643636ee",
+          "title": "Profile",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "should display current user email and username",
+              "fullTitle": "Profile should display current user email and username",
+              "timedOut": null,
+              "duration": 643,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.get('input[formControlName=\"email\"]').should('have.value', 'alice@example.com');\ncy.get('input[formControlName=\"username\"]').should('have.value', 'alice');",
+              "err": {},
+              "uuid": "a6078fb8-fea0-4467-ae3f-2d8acc6103c5",
+              "parentUUID": "c739e069-a7ff-43b0-96a1-2956643636ee",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should update username successfully and stay on profile",
+              "fullTitle": "Profile should update username successfully and stay on profile",
+              "timedOut": null,
+              "duration": 1187,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const newUsername = `alice_${Date.now()}`;\ncy.get('input[formControlName=\"username\"]').clear().type(newUsername, { force: true });\ncy.get('button[type=\"submit\"]').click();\ncy.url().should('include', '/profile');\n// Nettoyage : remettre le username original\ncy.get('input[formControlName=\"username\"]').clear().type('alice', { force: true });\ncy.get('button[type=\"submit\"]').click();",
+              "err": {},
+              "uuid": "a1718a46-2924-4623-adbb-f4a49b2ed690",
+              "parentUUID": "c739e069-a7ff-43b0-96a1-2956643636ee",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should show an error when the new email is already taken",
+              "fullTitle": "Profile should show an error when the new email is already taken",
+              "timedOut": null,
+              "duration": 728,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.get('input[formControlName=\"email\"]').clear().type('bob@example.com', { force: true });\ncy.get('button[type=\"submit\"]').click();\ncy.get('.server-error').should('be.visible');",
+              "err": {},
+              "uuid": "721331aa-253e-42ca-9b13-bab5324cb7c3",
+              "parentUUID": "c739e069-a7ff-43b0-96a1-2956643636ee",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should display subscribed topics",
+              "fullTitle": "Profile should display subscribed topics",
+              "timedOut": null,
+              "duration": 290,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.get('.subscriptions-section').should('be.visible');\ncy.get('.subscriptions-section').contains(/javascript/i).should('be.visible');\ncy.get('.subscriptions-section').contains(/python/i).should('be.visible');",
+              "err": {},
+              "uuid": "cc0933ec-78bb-419f-ba82-5d60257762b6",
+              "parentUUID": "c739e069-a7ff-43b0-96a1-2956643636ee",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should unsubscribe from a topic from the profile page",
+              "fullTitle": "Profile should unsubscribe from a topic from the profile page",
+              "timedOut": null,
+              "duration": 561,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.contains('mat-card.subscription-card', /python/i)\n    .contains('button', /se désabonner/i)\n    .click();\ncy.get('.subscriptions-section').contains(/python/i).should('not.exist');\n// Nettoyage : se réabonner depuis la page topics\ncy.visit('/topics');\ncy.contains('mat-card', /python/i)\n    .contains('button', /s'abonner/i)\n    .click();",
+              "err": {},
+              "uuid": "1921e6a8-aa70-4b7b-9ab5-3e085d3da240",
+              "parentUUID": "c739e069-a7ff-43b0-96a1-2956643636ee",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should logout and redirect to login",
+              "fullTitle": "Profile should logout and redirect to login",
+              "timedOut": null,
+              "duration": 337,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.contains('button', /se déconnecter/i).click();\ncy.url().should('include', '/login');",
+              "err": {},
+              "uuid": "adfd5be5-cd15-49e0-b1ca-18dbce1f5ba7",
+              "parentUUID": "c739e069-a7ff-43b0-96a1-2956643636ee",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "a6078fb8-fea0-4467-ae3f-2d8acc6103c5",
+            "a1718a46-2924-4623-adbb-f4a49b2ed690",
+            "721331aa-253e-42ca-9b13-bab5324cb7c3",
+            "cc0933ec-78bb-419f-ba82-5d60257762b6",
+            "1921e6a8-aa70-4b7b-9ab5-3e085d3da240",
+            "adfd5be5-cd15-49e0-b1ca-18dbce1f5ba7"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 3746,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.4"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/results/raw",
+        "overwrite": false,
+        "html": false,
+        "json": true
+      },
+      "version": "6.3.2"
+    }
+  }
+}

@@ -1,0 +1,162 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 4,
+    "passes": 4,
+    "pending": 0,
+    "failures": 0,
+    "start": "2026-05-04T11:15:41.689Z",
+    "end": "2026-05-04T11:15:43.299Z",
+    "duration": 1610,
+    "testsRegistered": 4,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "e718a067-fc39-48d4-be2f-09cd8e705ca0",
+      "title": "",
+      "fullFile": "cypress\\e2e\\topics\\topics.cy.ts",
+      "file": "cypress\\e2e\\topics\\topics.cy.ts",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "1cec6e5f-0bf6-4049-94e4-80cd47011e4c",
+          "title": "Topics",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "should display the list of all topics",
+              "fullTitle": "Topics should display the list of all topics",
+              "timedOut": null,
+              "duration": 533,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.get('mat-card.topic-card').should('have.length', 5);",
+              "err": {},
+              "uuid": "7c9c3c08-3d1b-48ba-bd72-23158cea301d",
+              "parentUUID": "1cec6e5f-0bf6-4049-94e4-80cd47011e4c",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should show subscribe and unsubscribe buttons depending on subscriptions",
+              "fullTitle": "Topics should show subscribe and unsubscribe buttons depending on subscriptions",
+              "timedOut": null,
+              "duration": 249,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// alice est abonnée à JS + Python → boutons warn ; les autres → boutons primary\ncy.get('mat-card.topic-card button[color=\"primary\"]').should('have.length.at.least', 1);\ncy.get('mat-card.topic-card button[color=\"warn\"]').should('have.length.at.least', 1);",
+              "err": {},
+              "uuid": "cb6b2da7-3182-45e7-a61a-4d4d51dae9cf",
+              "parentUUID": "1cec6e5f-0bf6-4049-94e4-80cd47011e4c",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should subscribe to a topic and update the button",
+              "fullTitle": "Topics should subscribe to a topic and update the button",
+              "timedOut": null,
+              "duration": 389,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.contains('mat-card.topic-card', 'Web3')\n    .find('button[color=\"primary\"]')\n    .click();\ncy.contains('mat-card.topic-card', 'Web3')\n    .find('button[color=\"warn\"]')\n    .should('be.visible');\n// Nettoyage\ncy.contains('mat-card.topic-card', 'Web3')\n    .find('button[color=\"warn\"]')\n    .click();",
+              "err": {},
+              "uuid": "31c490fc-c7ab-40d9-8678-b5f84b4a647d",
+              "parentUUID": "1cec6e5f-0bf6-4049-94e4-80cd47011e4c",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should unsubscribe from a topic and update the button",
+              "fullTitle": "Topics should unsubscribe from a topic and update the button",
+              "timedOut": null,
+              "duration": 365,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.contains('mat-card.topic-card', 'JavaScript')\n    .find('button[color=\"warn\"]')\n    .click();\ncy.contains('mat-card.topic-card', 'JavaScript')\n    .find('button[color=\"primary\"]')\n    .should('be.visible');\n// Nettoyage\ncy.contains('mat-card.topic-card', 'JavaScript')\n    .find('button[color=\"primary\"]')\n    .click();",
+              "err": {},
+              "uuid": "32e28205-e4d6-40de-b205-2a566d8eed22",
+              "parentUUID": "1cec6e5f-0bf6-4049-94e4-80cd47011e4c",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "7c9c3c08-3d1b-48ba-bd72-23158cea301d",
+            "cb6b2da7-3182-45e7-a61a-4d4d51dae9cf",
+            "31c490fc-c7ab-40d9-8678-b5f84b4a647d",
+            "32e28205-e4d6-40de-b205-2a566d8eed22"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 1536,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.4"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/results/raw",
+        "overwrite": false,
+        "html": false,
+        "json": true
+      },
+      "version": "6.3.2"
+    }
+  }
+}

@@ -1,0 +1,162 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 4,
+    "passes": 4,
+    "pending": 0,
+    "failures": 0,
+    "start": "2026-05-04T11:15:34.117Z",
+    "end": "2026-05-04T11:15:36.892Z",
+    "duration": 2775,
+    "testsRegistered": 4,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "c455b98a-1413-4d24-acdc-8295cb967bd0",
+      "title": "",
+      "fullFile": "cypress\\e2e\\posts\\create-post.cy.ts",
+      "file": "cypress\\e2e\\posts\\create-post.cy.ts",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "52c5a952-3dd8-4780-bd63-d3fd5d198d70",
+          "title": "Create Post",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "should display the create post form",
+              "fullTitle": "Create Post should display the create post form",
+              "timedOut": null,
+              "duration": 650,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.get('input[formControlName=\"title\"]').should('exist');\ncy.get('mat-select[formControlName=\"topicId\"]').should('exist');\ncy.get('textarea[formControlName=\"content\"]').should('exist');\ncy.get('button[type=\"submit\"]').should('exist');",
+              "err": {},
+              "uuid": "ecfd3ffe-707a-4bf3-895b-04b4cbadf743",
+              "parentUUID": "52c5a952-3dd8-4780-bd63-d3fd5d198d70",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should create a post and redirect to its detail page",
+              "fullTitle": "Create Post should create a post and redirect to its detail page",
+              "timedOut": null,
+              "duration": 1471,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.get('input[formControlName=\"title\"]').type('Mon article de test Cypress', { force: true });\ncy.get('mat-select[formControlName=\"topicId\"]').click();\ncy.get('mat-option').first().click();\ncy.get('textarea[formControlName=\"content\"]').type(\"Contenu de test généré par Cypress.\", { force: true });\ncy.get('button[type=\"submit\"]').click();\ncy.url().should('match', /\\/posts\\/\\d+/);\ncy.contains('Mon article de test Cypress').should('be.visible');",
+              "err": {},
+              "uuid": "035c5d52-747c-435e-90f1-cae07b6ee7ba",
+              "parentUUID": "52c5a952-3dd8-4780-bd63-d3fd5d198d70",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should keep submit button disabled when fields are empty",
+              "fullTitle": "Create Post should keep submit button disabled when fields are empty",
+              "timedOut": null,
+              "duration": 232,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.get('button[type=\"submit\"]').should('be.disabled');",
+              "err": {},
+              "uuid": "613432d9-0dac-4ac7-92e8-d7db911546d8",
+              "parentUUID": "52c5a952-3dd8-4780-bd63-d3fd5d198d70",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should list available topics in the topic selector",
+              "fullTitle": "Create Post should list available topics in the topic selector",
+              "timedOut": null,
+              "duration": 325,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.get('mat-select[formControlName=\"topicId\"]').click();\ncy.get('mat-option').should('have.length', 5);\ncy.get('mat-option').should('contain', 'JavaScript');",
+              "err": {},
+              "uuid": "9be35eb0-52fe-4ccf-bc5c-64a73cab4484",
+              "parentUUID": "52c5a952-3dd8-4780-bd63-d3fd5d198d70",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "ecfd3ffe-707a-4bf3-895b-04b4cbadf743",
+            "035c5d52-747c-435e-90f1-cae07b6ee7ba",
+            "613432d9-0dac-4ac7-92e8-d7db911546d8",
+            "9be35eb0-52fe-4ccf-bc5c-64a73cab4484"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 2678,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.4"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/results/raw",
+        "overwrite": false,
+        "html": false,
+        "json": true
+      },
+      "version": "6.3.2"
+    }
+  }
+}

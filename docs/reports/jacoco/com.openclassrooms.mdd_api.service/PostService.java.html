@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PostService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report"></a> &gt; <a href="index.source.html" class="el_package">com.openclassrooms.mdd_api.service</a> &gt; <span class="el_source">PostService.java</span></div><h1>PostService.java</h1><pre class="source lang-java linenums">package com.openclassrooms.mdd_api.service;
+
+import com.openclassrooms.mdd_api.dto.*;
+import com.openclassrooms.mdd_api.entity.Comment;
+import com.openclassrooms.mdd_api.entity.Post;
+import com.openclassrooms.mdd_api.entity.Topic;
+import com.openclassrooms.mdd_api.entity.User;
+import com.openclassrooms.mdd_api.repository.CommentRepository;
+import com.openclassrooms.mdd_api.repository.PostRepository;
+import com.openclassrooms.mdd_api.repository.SubscriptionRepository;
+import com.openclassrooms.mdd_api.repository.TopicRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class PostService {
+
+    private final PostRepository postRepository;
+    private final TopicRepository topicRepository;
+    private final SubscriptionRepository subscriptionRepository;
+    private final CommentRepository commentRepository;
+
+    public List&lt;PostSummaryResponse&gt; getFeed(User user, String sort) {
+<span class="fc" id="L30">        List&lt;Topic&gt; topics = subscriptionRepository.findByUser(user).stream()</span>
+<span class="fc" id="L31">                .map(sub -&gt; sub.getTopic())</span>
+<span class="fc" id="L32">                .toList();</span>
+
+<span class="fc bfc" id="L34" title="All 2 branches covered.">        if (topics.isEmpty()) {</span>
+<span class="fc" id="L35">            return List.of();</span>
+        }
+
+<span class="fc bfc" id="L38" title="All 2 branches covered.">        Sort.Direction direction = &quot;asc&quot;.equalsIgnoreCase(sort) ? Sort.Direction.ASC : Sort.Direction.DESC;</span>
+<span class="fc" id="L39">        Sort sorting = Sort.by(direction, &quot;createdAt&quot;);</span>
+
+<span class="fc" id="L41">        return postRepository.findByTopicIn(topics, sorting).stream()</span>
+<span class="fc" id="L42">                .map(post -&gt; new PostSummaryResponse(</span>
+<span class="fc" id="L43">                        post.getId(),</span>
+<span class="fc" id="L44">                        post.getTitle(),</span>
+<span class="fc" id="L45">                        post.getContent(),</span>
+<span class="fc" id="L46">                        post.getAuthor().getUsername(),</span>
+<span class="fc" id="L47">                        post.getTopic().getName(),</span>
+<span class="fc" id="L48">                        post.getCreatedAt()</span>
+                ))
+<span class="fc" id="L50">                .toList();</span>
+    }
+
+    public PostSummaryResponse create(User user, CreatePostRequest request) {
+<span class="fc" id="L54">        Topic topic = topicRepository.findById(request.topicId())</span>
+<span class="fc" id="L55">                .orElseThrow(() -&gt; new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;Thème introuvable&quot;));</span>
+
+<span class="fc" id="L57">        Post post = Post.builder()</span>
+<span class="fc" id="L58">                .title(request.title())</span>
+<span class="fc" id="L59">                .content(request.content())</span>
+<span class="fc" id="L60">                .author(user)</span>
+<span class="fc" id="L61">                .topic(topic)</span>
+<span class="fc" id="L62">                .build();</span>
+
+<span class="fc" id="L64">        post = postRepository.save(post);</span>
+
+<span class="fc" id="L66">        return new PostSummaryResponse(</span>
+<span class="fc" id="L67">                post.getId(),</span>
+<span class="fc" id="L68">                post.getTitle(),</span>
+<span class="fc" id="L69">                post.getContent(),</span>
+<span class="fc" id="L70">                post.getAuthor().getUsername(),</span>
+<span class="fc" id="L71">                post.getTopic().getName(),</span>
+<span class="fc" id="L72">                post.getCreatedAt()</span>
+        );
+    }
+
+    public PostDetailResponse getById(Long postId) {
+<span class="fc" id="L77">        Post post = postRepository.findById(postId)</span>
+<span class="fc" id="L78">                .orElseThrow(() -&gt; new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;Article introuvable&quot;));</span>
+
+<span class="fc" id="L80">        List&lt;CommentResponse&gt; comments = post.getComments().stream()</span>
+<span class="fc" id="L81">                .map(c -&gt; new CommentResponse(</span>
+<span class="fc" id="L82">                        c.getId(),</span>
+<span class="fc" id="L83">                        c.getContent(),</span>
+<span class="fc" id="L84">                        c.getAuthor().getUsername(),</span>
+<span class="fc" id="L85">                        c.getCreatedAt()</span>
+                ))
+<span class="fc" id="L87">                .toList();</span>
+
+<span class="fc" id="L89">        return new PostDetailResponse(</span>
+<span class="fc" id="L90">                post.getId(),</span>
+<span class="fc" id="L91">                post.getTitle(),</span>
+<span class="fc" id="L92">                post.getContent(),</span>
+<span class="fc" id="L93">                post.getAuthor().getUsername(),</span>
+<span class="fc" id="L94">                post.getTopic().getName(),</span>
+<span class="fc" id="L95">                post.getCreatedAt(),</span>
+                comments
+        );
+    }
+
+    public CommentResponse addComment(User user, Long postId, CreateCommentRequest request) {
+<span class="fc" id="L101">        Post post = postRepository.findById(postId)</span>
+<span class="fc" id="L102">                .orElseThrow(() -&gt; new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;Article introuvable&quot;));</span>
+
+<span class="fc" id="L104">        Comment comment = Comment.builder()</span>
+<span class="fc" id="L105">                .content(request.content())</span>
+<span class="fc" id="L106">                .author(user)</span>
+<span class="fc" id="L107">                .post(post)</span>
+<span class="fc" id="L108">                .build();</span>
+
+<span class="fc" id="L110">        comment = commentRepository.save(comment);</span>
+
+<span class="fc" id="L112">        return new CommentResponse(</span>
+<span class="fc" id="L113">                comment.getId(),</span>
+<span class="fc" id="L114">                comment.getContent(),</span>
+<span class="fc" id="L115">                comment.getAuthor().getUsername(),</span>
+<span class="fc" id="L116">                comment.getCreatedAt()</span>
+        );
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

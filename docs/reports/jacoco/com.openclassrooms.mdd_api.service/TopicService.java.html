@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TopicService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report"></a> &gt; <a href="index.source.html" class="el_package">com.openclassrooms.mdd_api.service</a> &gt; <span class="el_source">TopicService.java</span></div><h1>TopicService.java</h1><pre class="source lang-java linenums">package com.openclassrooms.mdd_api.service;
+
+import com.openclassrooms.mdd_api.dto.TopicResponse;
+import com.openclassrooms.mdd_api.entity.Subscription;
+import com.openclassrooms.mdd_api.entity.Topic;
+import com.openclassrooms.mdd_api.entity.User;
+import com.openclassrooms.mdd_api.repository.SubscriptionRepository;
+import com.openclassrooms.mdd_api.repository.TopicRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class TopicService {
+
+    private final TopicRepository topicRepository;
+    private final SubscriptionRepository subscriptionRepository;
+
+    public List&lt;TopicResponse&gt; getAll(User user) {
+<span class="fc" id="L26">        Set&lt;Long&gt; subscribedIds = subscriptionRepository.findByUser(user).stream()</span>
+<span class="fc" id="L27">                .map(sub -&gt; sub.getTopic().getId())</span>
+<span class="fc" id="L28">                .collect(Collectors.toSet());</span>
+
+<span class="fc" id="L30">        return topicRepository.findAll().stream()</span>
+<span class="fc" id="L31">                .map(topic -&gt; new TopicResponse(</span>
+<span class="fc" id="L32">                        topic.getId(),</span>
+<span class="fc" id="L33">                        topic.getName(),</span>
+<span class="fc" id="L34">                        topic.getDescription(),</span>
+<span class="fc" id="L35">                        subscribedIds.contains(topic.getId())</span>
+                ))
+<span class="fc" id="L37">                .toList();</span>
+    }
+
+    public void subscribe(User user, Long topicId) {
+<span class="fc" id="L41">        Topic topic = topicRepository.findById(topicId)</span>
+<span class="fc" id="L42">                .orElseThrow(() -&gt; new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;Thème introuvable&quot;));</span>
+
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        if (subscriptionRepository.existsByUserAndTopic(user, topic)) {</span>
+<span class="fc" id="L45">            throw new ResponseStatusException(HttpStatus.CONFLICT, &quot;Vous êtes déjà abonné à ce thème&quot;);</span>
+        }
+
+<span class="fc" id="L48">        subscriptionRepository.save(Subscription.builder().user(user).topic(topic).build());</span>
+<span class="fc" id="L49">    }</span>
+
+    public void unsubscribe(User user, Long topicId) {
+<span class="fc" id="L52">        Topic topic = topicRepository.findById(topicId)</span>
+<span class="fc" id="L53">                .orElseThrow(() -&gt; new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;Thème introuvable&quot;));</span>
+
+<span class="fc" id="L55">        Subscription subscription = subscriptionRepository.findByUserAndTopic(user, topic)</span>
+<span class="fc" id="L56">                .orElseThrow(() -&gt; new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;Vous n'êtes pas abonné à ce thème&quot;));</span>
+
+<span class="fc" id="L58">        subscriptionRepository.delete(subscription);</span>
+<span class="fc" id="L59">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
